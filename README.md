@@ -1,4 +1,4 @@
 # 8086assignment
 Y1S2 BACS1024 - Introduction to Computer System Assignment
 
-** FUCK 8086 **
+I HATE 8086
