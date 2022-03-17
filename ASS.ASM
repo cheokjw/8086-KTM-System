@@ -1,5 +1,4 @@
-//TODO: FIX GUEST PRICE PAGE OUTPUT (INFINITE LOOP)
-
+;// TODO: SETTLE LOGIN FUNCTION (COMPARE TWO STRINGS)
 .MODEL SMALL
 .STACK 100H
 .386
@@ -59,6 +58,19 @@
     MAX_PASS             DB          8
     ACT_PASS             DB          ?
     PASSWORD             DB          8 DUP (0)
+    
+    ; store info for validate username
+    A_VALUSERNAME       LABEL       BYTE
+    MAX_VALUSERNAME      DB          8
+    ACT_VALUSERNAME      DB          ?
+    VALUSERNAME          DB          8 DUP (0)
+
+    ; to store data from file
+    PBUFFER         DB 8 DUP (0), "$"
+    UBUFFER         DB 8 DUP (0), "$"          ; Make a plain buffer 
+
+
+
     ;----------------------------------------------------- END LOGIN PAGE VARIABLES --------------------------------------------------------------;
 
     ;------------------------------------------------------ REGISTER PAGE VARIABLES --------------------------------------------------------------;
@@ -80,24 +92,25 @@
 
     ; store register username
     REG_USERNAME         DB          8
-                        DB          ?
-                        DB          8 DUP (0)
+                         DB          ?
+                         DB          8 DUP (0)
     ; store register password
     REG_PASS             DB          8
-                        DB          ?
-                        DB          8 DUP (0)
+                         DB          ?
+                         DB          8 DUP (0)
 
     ; store register age
     REG_AGE              DB          3
-                        DB          ?
-                        DB          3 DUP (0)
-
+                         DB          ?
+                         DB          3 DUP (0)
+ 
     ; File Variable (Read and write)
     NUFILE          DB 'USERNAME.TXT', 0
     NPFILE          DB 'PASSWORD.TXT', 0
     NAFILE          DB 'AGE.TXT', 0
     HANDLE          DW       ?              ; This would be the file handle, the number that DOS assigns to open file
-    BUFFER          DB 255 DUP (0)          ; Make a plain buffer 
+    HANDLE2         DW       ?
+    BUFFER          DB 8 DUP (0), "$"       ; Make a plain buffer 
 ;----------------------------------------------------- END REGISTER PAGE VARIABLES -----------------------------------------------------------;
 
 ;------------------------------------------------------ GUEST SHOW PRICE VARIABLES -----------------------------------------------------------;
@@ -139,7 +152,7 @@
     OCOND           DB "1"
     TTLSTATION      DB "2"
     TTLTICKET       DB "1"
-ends
+    CONTINUE_TXT    DB "Press any key to continue...."
 ;--------------------------------------------------- END GUEST SHOW PRICE VARIABLES ----------------------------------------------------------;
 
 .CODE
@@ -190,7 +203,7 @@ MAIN PROC
         JE SHUTDOWN
 
     ;---------------------------- LOGIN PAGE ---------------------------------;
-    LOGIN:
+            LOGIN:
         MOV AH, 00H     ; clear screen                          
         MOV AL, 02H 
         INT 10H
@@ -211,31 +224,79 @@ MAIN PROC
         LEA DX, USERNAME_TXT
         INT 21H
         ; Login: Get input username
-        MOV CX,0
-        MOV CX,8
-        MOV SI,0
-        GETLNAME:
-            MOV AH,01H
-            INT 21H
-            MOV REG_USERNAME[SI], AL
-            INC SI
-            LOOP GETLNAME
-
+        MOV AH, 0AH
+        MOV DX, OFFSET A_USERNAME
+        INT 21H
         MOV AH, 09H
         LEA DX, PASSWORD_TXT
         INT 21H
         ; Login: Get input password
-        MOV CX,0
-        MOV CX,8
-        MOV SI,0
-        GETLPASS:
-            MOV AH, 01H
-            INT 21H
-            MOV PASSWORD[SI], AL
-            INC SI
-            LOOP GETLPASS
+        MOV AH, 0AH
+        MOV DX, OFFSET A_PASS
+        INT 21H
 
-        JMP VIEWMAP
+        ; Validate username
+        MOV AH,3DH
+        LEA DX, NUFILE
+        MOV AL,0  ; 0 -> reading purpose
+        INT 21H
+        MOV HANDLE,AX
+        MOV AH,3FH  ; read from file
+        MOV BX,HANDLE
+        MOV DX,OFFSET(UBUFFER)   ; store string into buffer
+        MOV CX,8
+        INT 21H
+        ; close file
+        MOV AH, 3EH
+        MOV BX, HANDLE
+        INT 21H
+
+        ; load password from file
+        MOV AH,3DH
+        LEA DX, NPFILE
+        MOV AL,0                    ; 0 -> reading purpose
+        INT 21H
+        MOV HANDLE2,AX
+        MOV AH,3FH                  ; read from file
+        MOV BX,HANDLE2
+        MOV DX,OFFSET(PBUFFER)      ; store string into buffer
+        MOV CX,8
+        INT 21H
+        MOV AH, 3EH                 ; close file
+        MOV BX, HANDLE2
+        INT 21H
+
+        ; compare input username and actual username
+        UCMP:
+            MOV SI, 0
+            UL3:
+                CMP SI, 8  
+                JE PCMP
+                JNE UL1
+            UL1:
+                MOV BL, USERNAME[SI]
+                CMP BL, UBUFFER[SI]
+                JE UL2
+                JNE SHUTDOWN
+            UL2:
+                INC SI
+                JMP UL3
+
+        ; compare input username and actual username
+        PCMP:
+            MOV SI, 0
+            PL3:
+                CMP SI, 8
+                JE VIEWMAP
+                JNE PL1
+            PL1:
+                MOV BL, PASSWORD[SI]
+                CMP BL, PBUFFER[SI]
+                JE PL2
+                JNE SHUTDOWN
+            PL2:
+                INC SI
+                JMP PL3 
 
     ;-------------------------= REGISTER PAGE ---------------------------------;
     REGISTER:   
@@ -274,17 +335,11 @@ MAIN PROC
             INT 21H
             MOV HANDLE, AX
             MOV DI, 1
-            ; move cursor to end of file
-            MOV BX, HANDLE
-            MOV AH, 42H
-            MOV AL, 2
-            MOV CX, 0
-            MOV DX, 0
-            INT 21H
             ; JC ERR_SEEK
             UINPUT:
             ; input text into username file
             MOV AH, 40H
+            MOV BX, HANDLE
             MOV DX, OFFSET REG_USERNAME + 2
             MOV CX, 8
             INT 21H
@@ -318,13 +373,6 @@ MAIN PROC
             INT 21H
             MOV HANDLE, AX
             MOV DI, 1
-            ; move cursor to end of file
-            MOV BX, HANDLE
-            MOV AH, 42H
-            MOV AL, 2
-            MOV CX, 0
-            MOV DX, 0
-            INT 21H
             PINPUT:
             ; input text into file
             MOV AH, 40H
@@ -362,13 +410,6 @@ MAIN PROC
             INT 21H
             MOV HANDLE, AX
             MOV DI, 1
-            ; move cursor to end of file
-            MOV BX, HANDLE
-            MOV AH, 42H
-            MOV AL, 2
-            MOV CX, 0
-            MOV DX, 0
-            INT 21H
             AINPUT:
             ; input text into file
             MOV AH, 40H
@@ -454,7 +495,7 @@ MAIN PROC
         INT 21H
                      
         MOV AH, 09H
-        MOV DX, OFFSET ANYKEY_BUTTON 
+        LEA DX, CONTINUE_TXT
         INT 21H
         ;PRESS ANY KEY TO CONTINUE
         PUSH CX
