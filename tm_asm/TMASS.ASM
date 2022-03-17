@@ -5,25 +5,29 @@
 	;-------------------------------------------------------- route option page -----------------------------------------------------;
 	; declare var for route option page
 	ROUTE_MENU	DB	13,10,				"=============================== Route Option ==================================="
-				DB	13,10,13,10,13,10,	"        		Choose Route:			"
-				DB 	13,10,13,10, 		"		 	  [1] Route Kedah > Johor"
-				DB 	13,10, 				"		 	  [2] Route Johor > Kedah"
-				DB 	13,10,13,10,13,10,				"		  --------- Please Enter Number ---------"
-				DB 	13,10,13,10, 				"		 	Your option : 	$"
+				DB	13,10,13,10,13,10,	"                               Choose Route:                                   "
+				DB 	13,10,13,10, 		"                         [1] Route Kedah > Johor                               "
+				DB 	13,10, 				"                         [2] Route Johor > Kedah                               "
+				DB 	13,10,13,10,13,10,	"                  --------- Please Enter Number ---------                      "
+				DB 	13,10,				"$" 		
+	ROUTE_TXT	DB 	13,10,				"                           Your option : 	$                                   "
+				
+	ERROR_MSS1	DB	13,10,				"                        !! Please enter 1 or 2 !!                             $"
 	ROUTE_OPT	DB 	0
+
 	
 	;--------------------------------------------------------- view map page ---------------------------------------------------------;
 	; declare var for view map page
 	KDH_ROUTE	DB	13,10,				"=================================== View Map ==================================="
 				DB	13,10
-				DB 	13,10,				"			     Route Kedah > Johor"
+				DB 	13,10,				"                               Route Kedah > Johor                             "
 				DB 	13,10, 				"$"
 	JHR_ROUTE	DB	13,10,				"=================================== View Map ==================================="
 				DB	13,10
 				DB 	13,10,				"                               Route Johor > Kedah								"
 				DB 	13,10, 				"$"			
 	VMAP_MENU	DB 	13,10,				"        |-----+------+-----+-----+-----+-----+-----+-----+-----+-----|         "
-				DB 	13,10,				"                KDH    PRK   KTN   TRG    PHG   SGR   NSN   MLK   JHR	        "	 
+				DB 	13,10,				"             KDH    PRK   KTN   TRG    PHG   SGR   NSN   MLK   JHR	            "	 
 				
 				DB 	13,10,13,10,		"                   [1] Kedah (KDH)        [6] Selangor (SGR)                   "
 				DB 	13,10,				"                   [2] Perak (PRK)        [7] N.Sembilan (NSN)                 "
@@ -35,14 +39,17 @@
 	DEP_TEXT	DB 	13,10,13,10,		"                           Department     :  $                                 "
 	DEST_TEXT	DB 	13,10, 				"                           Destination    :  $                                 "
 	
-	TICKET_TEXT	DB 	13,10,13,10,		"               *** Please enter 0 infront if input 0-9 ticket amount ***       "  
+	TICKET_TEXT	DB 	13,10,13,10,		"           *** Please enter 0 infront if input 1-9 ticket amount ***           "  
 				DB 	13,10,				"                           Ticket Amount  :  $                                 "
 	B_OR_CONT	DB 	13,10,13,10,13,10,	"[B]BACK                                            PRESS ANY KEY TO CONTINUE..$"
-	NL			DB	13,10,				"$"
+	ERROR_MSS2	DB	13,10,				"                   !! Invalid Input. Please insert 1 to 9 !!                  $"
+	ERROR_MSS3	DB 	13,10,				"               !! Invalid Route. This is Kedah to Johor route. !!             $"
+	ERROR_MSS4	DB 	13,10,				"               !! Invalid Route. This is Johor to Kedah route. !!             $"
+	ERROR_MSS5	DB 	13,10,				"     !! Invalid Input. MINIMUM 1 ticket and MAXIMUM 10 ticket to buy. !!      $"
 	
 	BACK_V		DB	0
-	DEPART_V 	DW	0
-	DESTIN_V	DW 	0
+	DEPART_V 	DB	0
+	DESTIN_V	DB 	0
 	TICKET_V	DB	0
 	TICKET_V1	DB	0
 	TICKET_V2	DB	0
@@ -53,6 +60,8 @@
 	R1			DB 	0
 	Q2			DB	0
 	R2			DB 	0
+	
+	
 	
 	;; jw code
 	;------------------------------------------------------ SHOW PRICE PAGE-----------------------------------------------------------;
@@ -92,11 +101,24 @@
 	R3				DB	0
 	PAYMENT_M		DB 	0
 
-	;-------------------------------------------------- Cash Payment Page -----------------------------------------------------------;
+	;-------------------------------------------------- Payment Page -----------------------------------------------------------;
 	; declare var for cash payment page
+
+	PAY_TXT	    DB	13,10,				"================================= Payment Page ================================="
+				DB 	13,10,13,10,13,10, 	"                           Sub-Total       :    RM $"              
+	PAY_TXT2  	DB 	13,10,				"                           Member Discount :    $"
+	PAY_TXT3	DB	13,10,				"                           Tax Total       :    $"
+	PAY_TXT4	DB 	13,10,				"                           Total Amount    :    RM $"
+	PAY_TXT5	DB 	13,10,13,10,13,10,	"                        Enter your pay amount :     RM $"
+	PAY_TXT6	DB 	13,10,13,10,		"                        Cash                  :     RM $"
+	PAY_TXT7	DB 	13,10,				"                        Change                :     RM $"
 	
-	CASHPAY_TXT	DB	13,10,				"================================= Payment Page ================================="
-	
+	START_P3	DB 	0
+	USERTYPE	DB  0
+	U_PAY1		DB 	0
+	U_PAY2		DB	0
+	U_PAY3		DB 	0
+	MEMBER_DIS	DB 	0
 	
 .CODE
 MAIN PROC
@@ -110,8 +132,14 @@ MAIN PROC
 		
 		;-------------- Route Option Page -------------------;
 		; display route option menu
+	ROUTE_PG:
 		MOV AH, 09H
 		LEA DX, ROUTE_MENU
+		INT 21H
+		
+	D_ROUTETXT:	
+		MOV AH, 09H
+		LEA DX, ROUTE_TXT
 		INT 21H
 		
 		; get route option from user
@@ -119,13 +147,29 @@ MAIN PROC
 		INT 21H
 		MOV ROUTE_OPT, AL
 		
-		; clear screen
-		 MOV AH, 00H
-		 MOV AL, 02H
-		 INT 10H
+		CMP ROUTE_OPT, "1"
+		JE 	VMAP_PAGE
+		CMP	ROUTE_OPT, "2"
+		JE	VMAP_PAGE
+		JNE ERRORM_RP
+		
+	ERRORM_RP:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS1
+		INT 21H
+		JMP D_ROUTETXT
+		
+		
 		
 		;----------------- View Map Page --------------------;
 		; display view map menu
+	VMAP_PAGE:	
+		
+		; clear screen
+		MOV AH, 00H
+		MOV AL, 02H
+		INT 10H
+	
 		CMP ROUTE_OPT, "1"
 		JE	D_KROUTE	
 		CMP ROUTE_OPT, "2"
@@ -147,7 +191,8 @@ MAIN PROC
 		MOV AH, 09H
 		LEA DX, VMAP_MENU
 		INT 21H
-		
+	
+	D_DEPTEXT:
 		; request departing point from user
 		MOV AH, 09H
 		LEA DX, DEP_TEXT
@@ -155,18 +200,81 @@ MAIN PROC
 		
 		MOV AH, 01H
 		INT 21H
-		MOV DEPART_V, AX
+		MOV DEPART_V, AL
+		
+		; validation (check input from 1 to  9)
+		CMP DEPART_V, "1"
+		JL	ERRORM_VM
+		CMP DEPART_V, "9"
+		JG 	ERRORM_VM
+		JLE D_DESTXT
+		
+		; display error message
+	ERRORM_VM:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS2
+		INT 21H
+		JMP D_DEPTEXT
 		
 		; request destination point from user
+	D_DESTXT:
 		MOV AH, 09H
 		LEA DX, DEST_TEXT
 		INT 21H
 		
 		MOV AH, 01H
 		INT 21H
-		MOV DESTIN_V, AX
+		MOV DESTIN_V, AL
+		
+		; validation (check input from 1 to 9)
+		CMP DESTIN_V, "1"
+		JL	ERRORM_VM2
+		CMP DESTIN_V, "9"
+		JG 	ERRORM_VM2
+		JLE CMPROUTE
+		
+		; display error message
+	ERRORM_VM2:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS2
+		INT 21H
+		JMP D_DESTXT
+		
+		; check if it invalid route based on route option
+	CMPROUTE:
+		CMP ROUTE_OPT, "1"
+		JE	CHK_KROUTE
+		CMP ROUTE_OPT, "2"
+		JE 	CHK_JROUTE
+	
+	CHK_KROUTE:
+		MOV BL, DEPART_V
+		CMP BL, DESTIN_V
+		JG  ERRORM_VM3
+		JNE D_TICTXT
+
+	CHK_JROUTE:
+		MOV BL, DEPART_V
+		CMP BL, DESTIN_V
+		JL  ERRORM_VM4
+		JNE D_TICTXT
+		
+		; display error message if invalid
+	ERRORM_VM3:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS3
+		INT 21H
+		JMP D_DEPTEXT
+		
+		; display error message if invalid
+	ERRORM_VM4:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS4
+		INT 21H
+		JMP D_DEPTEXT
 		
 		; request amount ticket needed from user
+	D_TICTXT:	
 		MOV AH, 09H
 		LEA DX, TICKET_TEXT
 		INT 21H
@@ -178,23 +286,17 @@ MAIN PROC
 		MOV AH, 01H
 		INT 21H
 		MOV TICKET_V2, AL
-		
-		; ask user to back to previous page or proceed to next page
-		MOV AH, 09H
-		LEA DX, B_OR_CONT
-		INT 21H
-		
-		MOV AH, 07H
-		INT 21H
-		MOV BACK_V, AL
-		
+
 		; HEX > DEC
 		SUB DEPART_V, 30H
 		SUB	DESTIN_V, 30H
 		SUB	TICKET_V1, 30H
 		SUB TICKET_V2, 30H
 		
-		; amount of ticket
+		;
+
+		
+		; calculate amount of ticket
 	TICKET_AMT:	
 		MOV AX, 0
 		MOV AL, TICKET_V1
@@ -204,7 +306,25 @@ MAIN PROC
 		CMP START_P2, 1
 		JE D_NOTICK
 		
-		; depends on route option to choose calculation method
+		; check if the ticket amount in the range of 1 to 10(inclusive)
+	CHK_TICK:
+		MOV BL, TICKET_V
+		CMP BL, 1
+		JL 	ERRORM_VM5
+		CMP BL, 10
+		JG 	ERRORM_VM5
+		JLE	CMPROUTE2
+		
+		; display error message if not in the range
+	ERRORM_VM5:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS5
+		INT 21H
+		JMP D_TICTXT
+		
+		
+		; compare route and depends on route option to choose calculation method
+	CMPROUTE2:	
 		CMP ROUTE_OPT, "1"
 		JE	CAL_TRAVEL1
 		CMP ROUTE_OPT, "2"
@@ -212,8 +332,8 @@ MAIN PROC
 		
 		; destination - department
 	CAL_TRAVEL1:
-		MOV BX, DESTIN_V
-		SUB BX, DEPART_V
+		MOV BL, DESTIN_V
+		SUB BL, DEPART_V
 		MOV JOURNEY_V, BX
 		CMP START_P, 1
 		JE 	D_NOSTAT
@@ -221,8 +341,8 @@ MAIN PROC
 		
 		; department - destination
 	CAL_TRAVEL2:	
-		MOV BX, DEPART_V
-		SUB BX, DESTIN_V
+		MOV BL, DEPART_V
+		SUB BL, DESTIN_V
 		MOV JOURNEY_V, BX
 		CMP START_P, 1
 		JE 	D_NOSTAT
@@ -236,6 +356,7 @@ MAIN PROC
 		MOV JOURNEY_V, AX
 		
 		; multiply station travelled price with ticket amount
+	CAL_TTLAMT:	
 		MOV AX, JOURNEY_V
 		MUL TICKET_V
 		MOV TTL_AMT, AX
@@ -258,7 +379,14 @@ MAIN PROC
 		ADD R2, 30H
 		ADD R1, 30H
 		
+		; ask user to back to previous page or proceed to next page
+		MOV AH, 09H
+		LEA DX, B_OR_CONT
+		INT 21H
 		
+		MOV AH, 07H
+		INT 21H
+		MOV BACK_V, AL
 		
 		; ----------------- Show Price Page (Member) --------------------;
 		; clear screen
@@ -287,7 +415,7 @@ MAIN PROC
 		ADD DESTIN_V, 30H
 		MOV SI, 0
 		MOV BX, 0
-		MOV BX, DEPART_V
+		MOV BL, DEPART_V
 		JMP NEXT_D
 		
 	; match input department and destination with respective value
@@ -371,7 +499,7 @@ MAIN PROC
 	; jmp here to display ending point text
 	; else , it will jmp to display number of station travelled text
 	D_DESTIN:  
-	    MOV BX, DESTIN_V
+	    MOV BL, DESTIN_V
 		INC SI
 		CMP SI, 1
 		JE PRINT_T4
@@ -438,7 +566,8 @@ MAIN PROC
 		MOV AH, 09H
 		LEA DX, SPRICE_TXT7
 		INT 21H
-		
+	
+	D_SUBTOTAL:
 		MOV AH, 02H
 		MOV DL, Q2
 		INT 21H
@@ -451,6 +580,11 @@ MAIN PROC
 		MOV DL, R1
 		INT 21H
 		
+		CMP START_P3, 1
+		JE 	D_PAYTXT2
+		CMP START_P3, 3
+		JE 	D_PAYTXT5
+		
 		; display choose payment menu
 		MOV AH, 09H
 		LEA DX, SPRICE_TXT8
@@ -460,11 +594,80 @@ MAIN PROC
 		INT 21H
 		MOV PAYMENT_M, AL
 		
-		CMP PAYMENT_M, "1"
-		JE
-		CMP PAYMENT_M, "2"
-		JE
+		; CMP PAYMENT_M, "1"
+		; JE
+		; CMP PAYMENT_M, "2"
+		; JE
 		
+		
+		; ----------------- Payment Page --------------------;
+		; clear screen
+		MOV AH, 00H
+		MOV AL, 02H
+		INT 10H
+		
+		; display payment text
+		MOV AH, 09H
+		LEA DX, PAY_TXT
+		INT 21H
+		
+		INC START_P3
+		JMP D_SUBTOTAL
+		
+	D_PAYTXT2:
+		MOV AH, 09H
+		LEA DX, PAY_TXT2
+		INT 21H
+		
+		CMP USERTYPE, 0
+		JE 	U_GUEST
+		CMP USERTYPE, 1
+		JE 	U_MEMBER
+		
+	U_GUEST:
+		MOV AH, 02H
+		MOV DL, "0"
+		INT 21H
+		CMP START_P3, 2
+		JE 	D_PAYTXT4
+		JNE D_PAYTXT3
+		
+	U_MEMBER:
+	
+	
+	D_PAYTXT3:
+		MOV AH, 09H
+		LEA DX, PAY_TXT3
+		INT 21H
+		
+		INC START_P3
+		CMP USERTYPE, 0
+		JE 	U_GUEST
+		CMP USERTYPE, 1
+		JE 	U_MEMBER
+	
+	D_PAYTXT4:
+		MOV AH, 09H
+		LEA DX, PAY_TXT4
+		INT 21H
+		
+		CMP USERTYPE, 0
+		JE 	TA_GUEST
+		CMP USERTYPE, 1
+		JE 	TA_MEMBER
+		
+	TA_GUEST:
+		INC START_P3
+		JMP D_SUBTOTAL	
+
+		
+	TA_MEMBER:
+	
+	
+	D_PAYTXT5:
+		MOV AH, 09H
+		LEA DX, PAY_TXT5
+		INT 21H
 		
 	
         MOV AX,4C00H
