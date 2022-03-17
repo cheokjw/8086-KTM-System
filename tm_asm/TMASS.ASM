@@ -38,15 +38,14 @@
 				DB 	13,10,13,10,		"                   ----------- Please Enter Number -----------                $"
 	DEP_TEXT	DB 	13,10,13,10,		"                           Department     :  $                                 "
 	DEST_TEXT	DB 	13,10, 				"                           Destination    :  $                                 "
-	
-	TICKET_TEXT	DB 	13,10,13,10,		"           *** Please enter 0 infront if input 1-9 ticket amount ***           "  
-				DB 	13,10,				"                           Ticket Amount  :  $                                 "
+	TICKET_TEXT	DB 	13,10,				"                           Ticket Amount  :  $                                 "
 	B_OR_CONT	DB 	13,10,13,10,13,10,	"[B]BACK                                            PRESS ANY KEY TO CONTINUE..$"
 	ERROR_MSS2	DB	13,10,				"                   !! Invalid Input. Please insert 1 to 9 !!                  $"
 	ERROR_MSS3	DB 	13,10,				"               !! Invalid Route. This is Kedah to Johor route. !!             $"
 	ERROR_MSS4	DB 	13,10,				"               !! Invalid Route. This is Johor to Kedah route. !!             $"
 	ERROR_MSS5	DB 	13,10,				"     !! Invalid Input. MINIMUM 1 ticket and MAXIMUM 10 ticket to buy. !!      $"
 	
+	COUNT		DB	0
 	BACK_V		DB	0
 	DEPART_V 	DB	0
 	DESTIN_V	DB 	0
@@ -169,31 +168,37 @@ MAIN PROC
 		MOV AH, 00H
 		MOV AL, 02H
 		INT 10H
-	
+		
+		; compare user input route option with 1 and 2
+		; to determine which route text to display
 		CMP ROUTE_OPT, "1"
 		JE	D_KROUTE	
 		CMP ROUTE_OPT, "2"
 		JE 	D_JROUTE
-		
+	
+		; display kedah to johor route
 	D_KROUTE:	
 		MOV AH, 09H
 		LEA DX, KDH_ROUTE
 		INT 21H
 		JMP D_VMAP
 	
+		; display johor to kedah route
 	D_JROUTE:
 		MOV AH, 09H
 		LEA DX, JHR_ROUTE
 		INT 21H
 		JMP D_VMAP
-		
+	
+		; display view map menu
 	D_VMAP:
 		MOV AH, 09H
 		LEA DX, VMAP_MENU
 		INT 21H
 	
-	D_DEPTEXT:
+	
 		; request departing point from user
+	D_DEPTEXT:
 		MOV AH, 09H
 		LEA DX, DEP_TEXT
 		INT 21H
@@ -226,10 +231,14 @@ MAIN PROC
 		INT 21H
 		MOV DESTIN_V, AL
 		
+		; HEX > DEC
+		SUB DEPART_V, 30H
+		SUB	DESTIN_V, 30H
+		
 		; validation (check input from 1 to 9)
-		CMP DESTIN_V, "1"
+		CMP DESTIN_V, 1
 		JL	ERRORM_VM2
-		CMP DESTIN_V, "9"
+		CMP DESTIN_V, 9
 		JG 	ERRORM_VM2
 		JLE CMPROUTE
 		
@@ -239,7 +248,7 @@ MAIN PROC
 		LEA DX, ERROR_MSS2
 		INT 21H
 		JMP D_DESTXT
-		
+	
 		; check if it invalid route based on route option
 	CMPROUTE:
 		CMP ROUTE_OPT, "1"
@@ -247,12 +256,16 @@ MAIN PROC
 		CMP ROUTE_OPT, "2"
 		JE 	CHK_JROUTE
 	
+		; check kedah to johor route
+		; ensure department < destination
 	CHK_KROUTE:
 		MOV BL, DEPART_V
 		CMP BL, DESTIN_V
 		JG  ERRORM_VM3
 		JNE D_TICTXT
-
+		
+		; check johor to kedah route
+		; ensure department > destination
 	CHK_JROUTE:
 		MOV BL, DEPART_V
 		CMP BL, DESTIN_V
@@ -282,29 +295,52 @@ MAIN PROC
 		MOV AH, 01H
 		INT 21H
 		MOV TICKET_V1, AL
+		SUB	TICKET_V1, 30H
 		
 		MOV AH, 01H
 		INT 21H
 		MOV TICKET_V2, AL
-
-		; HEX > DEC
-		SUB DEPART_V, 30H
-		SUB	DESTIN_V, 30H
-		SUB	TICKET_V1, 30H
 		SUB TICKET_V2, 30H
 		
-		;
-
+		; check ticket (digit 1)
+	CHK_TICKET1:
+		CMP TICKET_V1, 1
+		JL	TICKET_AMT
+		CMP TICKET_V1, 9
+		JG 	TICKET_AMT
+		JNE CHK_TICKET2
 		
+		; check ticket (digit 2)
+	CHK_TICKET2:
+		ADD TICKET_V2, 30H
+		CMP TICKET_V2, 13
+		JE	CHK_ENTER
+		JNE	TICKET_AMT
+		
+	CHK_ENTER:
+		INC COUNT
+		; avoid double checking 
+		SUB TICKET_V2, 30H
+		MOV BL, TICKET_V1
+		MOV TICKET_V2, BL
+		MOV TICKET_V1, 0
+		JMP CAL_AMT
+	
+	TICKET_AMT:
+		SUB TICKET_V2, 30H
+		
+	CAL_AMT:
 		; calculate amount of ticket
-	TICKET_AMT:	
 		MOV AX, 0
 		MOV AL, TICKET_V1
 		MUL TEN
 		ADD AL, TICKET_V2
 		MOV TICKET_V, AL
 		CMP START_P2, 1
-		JE D_NOTICK
+		JE 	D_NOTICK
+		CMP COUNT, 1
+		JE 	CMPROUTE2
+		JNE CHK_TICK
 		
 		; check if the ticket amount in the range of 1 to 10(inclusive)
 	CHK_TICK:
@@ -330,7 +366,7 @@ MAIN PROC
 		CMP ROUTE_OPT, "2"
 		JE 	CAL_TRAVEL2
 		
-		; destination - department
+		; calculation1 = destination - department
 	CAL_TRAVEL1:
 		MOV BL, DESTIN_V
 		SUB BL, DEPART_V
@@ -339,7 +375,7 @@ MAIN PROC
 		JE 	D_NOSTAT
 		JNE CAL_TOTAL
 		
-		; department - destination
+		; calculation2 = department - destination
 	CAL_TRAVEL2:	
 		MOV BL, DEPART_V
 		SUB BL, DESTIN_V
@@ -348,14 +384,14 @@ MAIN PROC
 		JE 	D_NOSTAT
 		JMP CAL_TOTAL
 	
-		; multiply station travelled with its price
+		; multiply station travelled with its price(10)
 	CAL_TOTAL:	
 		MOV AX, 0
 		MOV AX, JOURNEY_V
 		MUL TEN
 		MOV JOURNEY_V, AX
 		
-		; multiply station travelled price with ticket amount
+		; multiply station travelled price with total ticket amount
 	CAL_TTLAMT:	
 		MOV AX, JOURNEY_V
 		MUL TICKET_V
@@ -379,7 +415,7 @@ MAIN PROC
 		ADD R2, 30H
 		ADD R1, 30H
 		
-		; ask user to back to previous page or proceed to next page
+		; ask user back to previous page or proceed to next page
 		MOV AH, 09H
 		LEA DX, B_OR_CONT
 		INT 21H
@@ -541,7 +577,7 @@ MAIN PROC
 		LEA DX, SPRICE_TXT6
 		INT 21H
 		INC START_P2
-		JMP TICKET_AMT
+		JMP CAL_AMT
 	
 	; display number of ticket purchased
 	D_NOTICK:
@@ -593,12 +629,6 @@ MAIN PROC
 		MOV AH, 07H
 		INT 21H
 		MOV PAYMENT_M, AL
-		
-		; CMP PAYMENT_M, "1"
-		; JE
-		; CMP PAYMENT_M, "2"
-		; JE
-		
 		
 		; ----------------- Payment Page --------------------;
 		; clear screen
