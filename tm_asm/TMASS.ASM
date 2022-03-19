@@ -60,8 +60,6 @@
 	Q2			DB	0
 	R2			DB 	0
 	
-	
-	
 	;; jw code
 	;------------------------------------------------------ SHOW PRICE PAGE-----------------------------------------------------------;
 	; declare var for show price page						
@@ -95,7 +93,7 @@
     STATE9          DB "JOHOR (JHR)$"
 	
 	START_P			DB 	0
-	START_P2		DB 	0
+	COUNT2			DB 	0
 	Q3				DB	0
 	R3				DB	0
 	PAYMENT_M		DB 	0
@@ -104,20 +102,24 @@
 	; declare var for cash payment page
 
 	PAY_TXT	    DB	13,10,				"================================= Payment Page ================================="
-				DB 	13,10,13,10,13,10, 	"                           Sub-Total       :    RM $"              
-	PAY_TXT2  	DB 	13,10,				"                           Member Discount :    $"
-	PAY_TXT3	DB	13,10,				"                           Tax Total       :    $"
-	PAY_TXT4	DB 	13,10,				"                           Total Amount    :    RM $"
-	PAY_TXT5	DB 	13,10,13,10,13,10,	"                        Enter your pay amount :     RM $"
-	PAY_TXT6	DB 	13,10,13,10,		"                        Cash                  :     RM $"
-	PAY_TXT7	DB 	13,10,				"                        Change                :     RM $"
+				DB 	13,10,13,10,13,10, 	"                          Sub-Total       :    RM $                            "              
+	PAY_TXT2  	DB 	13,10,				"                          Member Discount :    $                               "
+	PAY_TXT3	DB	13,10,				"                          Tax Total       :    $                               "
+	PAY_TXT4	DB 	13,10,				"                          Total Amount    :    RM $                            "
+	PAY_TXT5	DB 	13,10,13,10,13,10,	"                       Enter your pay amount :     RM $                        "
+	PAY_TXT6	DB 	13,10,13,10,		"                       Cash                  :     RM $                        "
+	PAY_TXT7	DB 	13,10,				"                       Change                :     RM $                        "
 	
-	START_P3	DB 	0
+	COUNT3		DB 	0
+	COUNT4		DB 	0
 	USERTYPE	DB  0
-	U_PAY1		DB 	0
-	U_PAY2		DB	0
-	U_PAY3		DB 	0
+	U_PAY1		DW 	0
+	U_PAY2		DW	0
+	U_PAY3		DW 	0
+	U_TPAY		DW	0
 	MEMBER_DIS	DB 	0
+	HUNDRED		DB	0
+	REMAIN		DW 	0
 	
 .CODE
 MAIN PROC
@@ -157,8 +159,6 @@ MAIN PROC
 		LEA DX, ERROR_MSS1
 		INT 21H
 		JMP D_ROUTETXT
-		
-		
 		
 		;----------------- View Map Page --------------------;
 		; display view map menu
@@ -336,7 +336,7 @@ MAIN PROC
 		MUL TEN
 		ADD AL, TICKET_V2
 		MOV TICKET_V, AL
-		CMP START_P2, 1
+		CMP COUNT2, 1
 		JE 	D_NOTICK
 		CMP COUNT, 1
 		JE 	CMPROUTE2
@@ -396,6 +396,8 @@ MAIN PROC
 		MOV AX, JOURNEY_V
 		MUL TICKET_V
 		MOV TTL_AMT, AX
+		CMP COUNT4, 1
+		JE 	CAL_CHANGE
 		
 		; preparing in display total amount
 		MOV AX, 0
@@ -576,7 +578,7 @@ MAIN PROC
 		MOV AH, 09H
 		LEA DX, SPRICE_TXT6
 		INT 21H
-		INC START_P2
+		INC COUNT2
 		JMP CAL_AMT
 	
 	; display number of ticket purchased
@@ -603,6 +605,7 @@ MAIN PROC
 		LEA DX, SPRICE_TXT7
 		INT 21H
 	
+		; display subtotal
 	D_SUBTOTAL:
 		MOV AH, 02H
 		MOV DL, Q2
@@ -616,9 +619,9 @@ MAIN PROC
 		MOV DL, R1
 		INT 21H
 		
-		CMP START_P3, 1
-		JE 	D_PAYTXT2
-		CMP START_P3, 3
+		CMP COUNT3, 1
+		JE 	D_PAYTXT2	; jmp to member disc text
+		CMP COUNT3, 3
 		JE 	D_PAYTXT5
 		
 		; display choose payment menu
@@ -636,71 +639,162 @@ MAIN PROC
 		MOV AL, 02H
 		INT 10H
 		
-		; display payment text
+		; display sub total text
 		MOV AH, 09H
 		LEA DX, PAY_TXT
 		INT 21H
 		
-		INC START_P3
-		JMP D_SUBTOTAL
+		INC COUNT3		; count3 = 1
+		JMP D_SUBTOTAL  ; to display subtotal
 		
+		; display member discount text
 	D_PAYTXT2:
 		MOV AH, 09H
 		LEA DX, PAY_TXT2
 		INT 21H
 		
+		; compare usertype = guest(0) or member(1)
 		CMP USERTYPE, 0
 		JE 	U_GUEST
 		CMP USERTYPE, 1
 		JE 	U_MEMBER
 		
+		; if usertype == guest
+		; display 0 for member discount
 	U_GUEST:
 		MOV AH, 02H
 		MOV DL, "0"
 		INT 21H
-		CMP START_P3, 2
+		CMP COUNT3, 2
 		JE 	D_PAYTXT4
 		JNE D_PAYTXT3
 		
+		; if usertype == member
+		; calculate member discount
 	U_MEMBER:
 	
 	
+		;  display tax total
 	D_PAYTXT3:
 		MOV AH, 09H
 		LEA DX, PAY_TXT3
 		INT 21H
 		
-		INC START_P3
+		INC COUNT3   		; count3 = 2
+		; compare usertype = guest(0) or member(1)
 		CMP USERTYPE, 0
 		JE 	U_GUEST
 		CMP USERTYPE, 1
-		JE 	U_MEMBER
-	
+		JE 	U_GUEST
+		
+		; display total amount text
 	D_PAYTXT4:
 		MOV AH, 09H
 		LEA DX, PAY_TXT4
 		INT 21H
 		
+		; compare usertype = guest(0) or member(1)
 		CMP USERTYPE, 0
 		JE 	TA_GUEST
 		CMP USERTYPE, 1
 		JE 	TA_MEMBER
 		
 	TA_GUEST:
-		INC START_P3
+		INC COUNT3			; count3 = 3
 		JMP D_SUBTOTAL	
 
 		
 	TA_MEMBER:
 	
 	
+		; request user input pay amount
 	D_PAYTXT5:
 		MOV AH, 09H
 		LEA DX, PAY_TXT5
 		INT 21H
 		
-	
-        MOV AX,4C00H
-        INT 21H
-MAIN ENDP
+		; user input pay amount (digit 1)
+		MOV AH, 01H
+		INT 21H
+		MOV U_PAY1, AX
+		
+		; user input pay amount (digit 2)
+		MOV AH, 01H
+		INT 21H
+		MOV U_PAY2, AX
+		
+		; user input pay amount (digit 3)
+		MOV AH, 01H
+		INT 21H
+		MOV U_PAY3, AX
+		
+		; display cash text
+		MOV AH, 09H
+		LEA DX, PAY_TXT6
+		INT 21H
+		
+		MOV AH, 02H
+		MOV DX, U_PAY1
+		INT 21H
+		
+		MOV AH, 02H
+		MOV DX, U_PAY2
+		INT 21H
+		
+		MOV AH, 02H
+		MOV DX, U_PAY3
+		INT 21H
+		
+		
+		; hex > dec
+		SUB U_PAY1, 30H
+		SUB U_PAY2, 30H
+		SUB U_PAY3, 30H
+		
+		; 
+		MOV AX, 0
+		MOV AX, U_PAY1
+		MUL HUNDRED
+		MOV U_PAY1, AX
+		
+		MOV AX, U_PAY2
+		MUL TEN
+		MOV U_PAY2, AX
+		
+		MOV BX, U_PAY1
+		ADD BX, U_PAY2
+		ADD BX, U_PAY3
+		MOV U_TPAY, BX
+		
+		; display change text
+		MOV AH, 09H
+		LEA DX, PAY_TXT7
+		INT 21H
+		
+		INC COUNT4
+		JMP CAL_TTLAMT
+		
+	CAL_CHANGE:		
+		MOV AX, 0
+		MOV BX, U_TPAY
+		SUB BX, TTL_AMT
+		
+		; here got prob can only display weird stuff and no support up to 3 digit calculation
+		ADD BX, 30H
+		MOV AH, 02H
+		MOV DX, BX
+		INT 21H
+		
+
+	MOV AX,4C00H
+	INT 21H 
+MAIN ENDP  
 	END MAIN
+	
+; payment page 
+; validation, last part calculation, membershipz
+
+; showprice page
+; need to deduct zero infront
+
+; each page back and proceed havent do 
