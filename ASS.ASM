@@ -1,141 +1,246 @@
-;// TODO: SETTLE LOGIN FUNCTION (COMPARE TWO STRINGS)
+;// TODO: SETTLE TOPUP PAGE (COMPLETE CONDITION JUMP)
 .MODEL SMALL
 .STACK 100H
 .386
 .DATA
 ;------------------------------------------------------ WELCOME PAGES VARIABLES--------------------------------------------------------------;
-    COND            DB 1
+    COND                        DB 1
 
-    WELCOME_TXT     DB 13,10,                       "    /@@   /@@/@@@@@@@@/@@      /@@     /@@      /@@ /@@       /@@              "
-                    DB 13,10,                       "   | @@  /@@/__  @@__/ @@@    /@@@    | @@@    /@@@| @/      |__/              "    
-                    DB 13,10,                       "   | @@ /@@/   | @@  | @@@@  /@@@@    | @@@@  /@@@@|_/@@@@@@@ /@@  /@@@@@@     "
-                    DB 13,10,                       "   | @@@@@/    | @@  | @@ @@/@@ @@    | @@ @@/@@ @@ /@@_____/| @@ |____  @@    "
-                    DB 13,10,                       "   | @@  @@    | @@  | @@  @@@| @@    | @@  @@@| @@|  @@@@@@ | @@  /@@@@@@@    "
-                    DB 13,10,                       "   | @@\  @@   | @@  | @@\  @ | @@    | @@\  @ | @@ \____  @@| @@ /@@__  @@    "
-                    DB 13,10,                       "   | @@ \  @@  | @@  | @@ \/  | @@    | @@ \/  | @@ /@@@@@@@/| @@|  @@@@@@@    "
-                    DB 13,10,                       "   |__/  \__/  |__/  |__/     |__/    |__/     |__/|_______/ |__/ \_______/   $"
+    WELCOME_TXT                 DB 13,10,                       "    /@@   /@@/@@@@@@@@/@@      /@@     /@@      /@@ /@@       /@@              "
+                                DB 13,10,                       "   | @@  /@@/__  @@__/ @@@    /@@@    | @@@    /@@@| @/      |__/              "    
+                                DB 13,10,                       "   | @@ /@@/   | @@  | @@@@  /@@@@    | @@@@  /@@@@|_/@@@@@@@ /@@  /@@@@@@     "
+                                DB 13,10,                       "   | @@@@@/    | @@  | @@ @@/@@ @@    | @@ @@/@@ @@ /@@_____/| @@ |____  @@    "
+                                DB 13,10,                       "   | @@  @@    | @@  | @@  @@@| @@    | @@  @@@| @@|  @@@@@@ | @@  /@@@@@@@    "
+                                DB 13,10,                       "   | @@\  @@   | @@  | @@\  @ | @@    | @@\  @ | @@ \____  @@| @@ /@@__  @@    "
+                                DB 13,10,                       "   | @@ \  @@  | @@  | @@ \/  | @@    | @@ \/  | @@ /@@@@@@@/| @@|  @@@@@@@    "
+                                DB 13,10,                       "   |__/  \__/  |__/  |__/     |__/    |__/     |__/|_______/ |__/ \_______/   $"
 
-    WELCOME_TXT2    DB 13,10,13,10,13,10,13,10,     "============================ Welcome to KTM M'sia ============================="
-                    DB 13,10,13,10,                 "                        Please choose your login option !!!                   "
-                    DB 13,10,13,10,                 "                            1.    Login as Member                             "
-                    DB 13,10,                       "                            2.    Register                                    "
-                    DB 13,10,                       "                            3.    Login as Guest                              "
-                    DB 13,10,                       "                            4.    Quit                                        "
-                    DB 13,10,13,10,                 "                (Login as Member to get MEMBER EXCLUSIVE discounts)    $"
+    WELCOME_TXT2                DB 13,10,13,10,13,10,13,10,     "============================ Welcome to KTM M'sia ============================="
+                                DB 13,10,13,10,                 "                        Please choose your login option !!!                   "
+                                DB 13,10,13,10,                 "                            1.    Login as Member                             "
+                                DB 13,10,                       "                            2.    Register                                    "
+                                DB 13,10,                       "                            3.    Login as Guest                              "
+                                DB 13,10,                       "                            4.    Quit                                        "
+                                DB 13,10,13,10,                 "                (Login as Member to get MEMBER EXCLUSIVE discounts)    $"
 
-    WELCOME_OPT_TXT DB 13,10,13,10,                 "                              Option: $"
+    WELCOME_OPT_TXT             DB 13,10,13,10,                 "                              Option: $"
 
     ; store user input
-    A_WELCOME_OPT       LABEL       BYTE              ; name
-    MAX_WELCOME_OPT      DB          2                ; max length
-    ACT_WELCOME_OPT      DB          ?                ; actual length
-    WELCOME_OPT          DB          2 DUP (0)               
+    A_WELCOME_OPT               LABEL       BYTE              ; name
+    MAX_WELCOME_OPT             DB          2                ; max length
+    ACT_WELCOME_OPT             DB          ?                ; actual length
+    WELCOME_OPT                 DB          2 DUP (0)               
     ;------------------------------------------------------ END WELCOME PAGE VARIABLES ----------------------------------------------------------;
 
     ;-------------------------------------------------------- LOGIN PAGE VARIABLES --------------------------------------------------------------;
-    LOGIN_TXT       DB 13,10,               "                /@@        /@@@@@@   /@@@@@@  /@@@@@@ /@@   /@@          "
-                    DB 13,10,               "               | @@       /@@__  @@ /@@__  @@|_  @@_/| @@@ | @@          "
-                    DB 13,10,               "               | @@      | @@  \ @@| @@  \__/  | @@  | @@@@| @@          "
-                    DB 13,10,               "               | @@      | @@  | @@| @@ /@@@@  | @@  | @@ @@ @@          "
-                    DB 13,10,               "               | @@      | @@  | @@| @@|_  @@  | @@  | @@  @@@@          " 
-                    DB 13,10,               "               | @@      | @@  | @@| @@  \ @@  | @@  | @@\  @@@          "
-                    DB 13,10,               "               | @@@@@@@@|  @@@@@@/|  @@@@@@/ /@@@@@@| @@ \  @@          "
-                    DB 13,10,               "               |________/ \______/  \______/ |______/|__/  \__/         $"
+    LOGIN_TXT                   DB 13,10,               "                /@@        /@@@@@@   /@@@@@@  /@@@@@@ /@@   /@@          "
+                                DB 13,10,               "               | @@       /@@__  @@ /@@__  @@|_  @@_/| @@@ | @@          "
+                                DB 13,10,               "               | @@      | @@  \ @@| @@  \__/  | @@  | @@@@| @@          "
+                                DB 13,10,               "               | @@      | @@  | @@| @@ /@@@@  | @@  | @@ @@ @@          "
+                                DB 13,10,               "               | @@      | @@  | @@| @@|_  @@  | @@  | @@  @@@@          " 
+                                DB 13,10,               "               | @@      | @@  | @@| @@  \ @@  | @@  | @@\  @@@          "
+                                DB 13,10,               "               | @@@@@@@@|  @@@@@@/|  @@@@@@/ /@@@@@@| @@ \  @@          "
+                                DB 13,10,               "               |________/ \______/  \______/ |______/|__/  \__/         $"
 
-    LOGIN_TXT2      DB 13,10,13,10,13,10,   "================================ Login Page ===================================$"
+    LOGIN_TXT2                  DB 13,10,13,10,13,10,   "================================ Login Page ===================================$"
 
-    USERNAME_TXT    DB 13,10,13,10,         "          Please enter your username: $"
-    PASSWORD_TXT    DB 13,10,13,10,         "          Please enter your password: $"
+    USERNAME_TXT                DB 13,10,13,10,         "          Please enter your username: $"
+    PASSWORD_TXT                DB 13,10,13,10,         "          Please enter your password: $"
 
     ; store login uername
-    A_USERNAME          LABEL       BYTE
-    MAX_USERNAME         DB          8
-    ACT_USERNAME         DB          ?
-    USERNAME             DB          8 DUP (0)
+    A_USERNAME                  LABEL       BYTE
+    MAX_USERNAME                DB          9
+    ACT_USERNAME                DB          ?
+    USERNAME                    DB          9 DUP (0)
 
     ; store input password
-    A_PASS              LABEL       BYTE
-    MAX_PASS             DB          8
-    ACT_PASS             DB          ?
-    PASSWORD             DB          8 DUP (0)
+    A_PASS                      LABEL       BYTE
+    MAX_PASS                    DB          9
+    ACT_PASS                    DB          ?
+    PASSWORD                    DB          9 DUP (0)
     
     ; store info for validate username
-    A_VALUSERNAME       LABEL       BYTE
-    MAX_VALUSERNAME      DB          8
-    ACT_VALUSERNAME      DB          ?
-    VALUSERNAME          DB          8 DUP (0)
+    A_VALUSERNAME               LABEL       BYTE
+    MAX_VALUSERNAME             DB          8
+    ACT_VALUSERNAME             DB          ?
+    VALUSERNAME                 DB          8 DUP (0)
 
     ; to store data from file
-    PBUFFER         DB 8 DUP (0), "$"
-    UBUFFER         DB 8 DUP (0), "$"          ; Make a plain buffer 
+    PBUFFER                     DB          8 DUP (0), "$"
+    UBUFFER                     DB          8 DUP (0), "$"          ; Make a plain buffer 
 
 
 
     ;----------------------------------------------------- END LOGIN PAGE VARIABLES --------------------------------------------------------------;
 
     ;------------------------------------------------------ REGISTER PAGE VARIABLES --------------------------------------------------------------;
-    REGISTER_TXT    DB 13,10,               " /@@@@@@@  /@@@@@@@@  /@@@@@@  /@@@@@@  /@@@@@@  /@@@@@@@@/@@@@@@@@ /@@@@@@@ "
-                    DB 13,10,               "| @@__  @@| @@_____/ /@@__  @@|_  @@_/ /@@__  @@|__  @@__/ @@_____/| @@__  @@"
-                    DB 13,10,               "| @@  \ @@| @@      | @@  \__/  | @@  | @@  \__/   | @@  | @@      | @@  \ @@"
-                    DB 13,10,               "| @@@@@@@/| @@@@@   | @@ /@@@@  | @@  |  @@@@@@    | @@  | @@@@@   | @@@@@@@/"
-                    DB 13,10,               "| @@__  @@| @@__/   | @@|_  @@  | @@   \____  @@   | @@  | @@__/   | @@__  @@" 
-                    DB 13,10,               "| @@  \ @@| @@      | @@  \ @@  | @@   /@@  \ @@   | @@  | @@      | @@  \ @@"
-                    DB 13,10,               "| @@  | @@| @@@@@@@@|  @@@@@@/ /@@@@@@|  @@@@@@/   | @@  | @@@@@@@@| @@  | @@"
-                    DB 13,10,               "|__/  |__/|________/ \______/ |______/ \______/    |__/  |________/|__/  |__/$"
+    REGISTER_TXT                DB 13,10,               " /@@@@@@@  /@@@@@@@@  /@@@@@@  /@@@@@@  /@@@@@@  /@@@@@@@@/@@@@@@@@ /@@@@@@@ "
+                                DB 13,10,               "| @@__  @@| @@_____/ /@@__  @@|_  @@_/ /@@__  @@|__  @@__/ @@_____/| @@__  @@"
+                                DB 13,10,               "| @@  \ @@| @@      | @@  \__/  | @@  | @@  \__/   | @@  | @@      | @@  \ @@"
+                                DB 13,10,               "| @@@@@@@/| @@@@@   | @@ /@@@@  | @@  |  @@@@@@    | @@  | @@@@@   | @@@@@@@/"
+                                DB 13,10,               "| @@__  @@| @@__/   | @@|_  @@  | @@   \____  @@   | @@  | @@__/   | @@__  @@" 
+                                DB 13,10,               "| @@  \ @@| @@      | @@  \ @@  | @@   /@@  \ @@   | @@  | @@      | @@  \ @@"
+                                DB 13,10,               "| @@  | @@| @@@@@@@@|  @@@@@@/ /@@@@@@|  @@@@@@/   | @@  | @@@@@@@@| @@  | @@"
+                                DB 13,10,               "|__/  |__/|________/ \______/ |______/ \______/    |__/  |________/|__/  |__/$"
 
-    REGISTER_TXT2   DB 13,10,13,10,13,10,   "================================= Register =====================================$"
+    REGISTER_TXT2               DB 13,10,13,10,13,10,   "================================= Register =====================================$"
 
-    REG_NAME_TXT    DB 13,10,13,10,         "          Please register your username : $"
-    REG_PASS_TXT    DB 13,10,13,10,         "          Please register your password : $"
-    REG_AGE_TXT     DB 13,10,13,10,         "          Plesae register your age      : $"
-    REG_SUCCESS     DB 13,10,13,10,         "                          Registered Successfully! $"
+    REG_NAME_TXT                DB 13,10,13,10,         "          Please register your username : $"
+    REG_PASS_TXT                DB 13,10,13,10,         "          Please register your password : $"
+    REG_AGE_TXT                 DB 13,10,13,10,         "          Plesae register your age      : $"
+    REG_SUCCESS                 DB 13,10,13,10,         "                          Registered Successfully! $"
+    CONTINUE_TXT                DB 13,10,               "                       Press Any Key To Continue........$"
 
     ; store register username
-    REG_USERNAME         DB          8
-                         DB          ?
-                         DB          8 DUP (0)
+    REG_USERNAME                DB          9
+                                DB          ?
+                                DB          9 DUP (0)
     ; store register password
-    REG_PASS             DB          8
-                         DB          ?
-                         DB          8 DUP (0)
+    REG_PASS                    DB          9
+                                DB          ?
+                                DB          9 DUP (0)
 
     ; store register age
-    REG_AGE              DB          3
-                         DB          ?
-                         DB          3 DUP (0)
+    REG_AGE                     DB          3
+                                DB          ?
+                                DB          3 DUP (0)
  
     ; File Variable (Read and write)
-    NUFILE          DB 'USERNAME.TXT', 0
-    NPFILE          DB 'PASSWORD.TXT', 0
-    NAFILE          DB 'AGE.TXT', 0
-    HANDLE          DW       ?              ; This would be the file handle, the number that DOS assigns to open file
-    HANDLE2         DW       ?
-    BUFFER          DB 8 DUP (0), "$"       ; Make a plain buffer 
+    NUFILE                      DB 'USERNAME.TXT', 0
+    NPFILE                      DB 'PASSWORD.TXT', 0
+    NAFILE                      DB 'AGE.TXT', 0
+    NTFILE                      DB 'TOPUP.TXT', 0
+    HANDLE                      DW       ?              ; This would be the file handle, the number that DOS assigns to open file
+    HANDLE2                     DW       ?
+    BUFFER                      DB 8 DUP (0), "$"       ; Make a plain buffer 
 ;----------------------------------------------------- END REGISTER PAGE VARIABLES -----------------------------------------------------------;
 
-;------------------------------------------------------ GUEST SHOW PRICE VARIABLES -----------------------------------------------------------;
-    GUEST_TXT   DB 13,10,13,10,         "        ========================================"
-                DB 13,10,               "        |      ____  ____  ___ ____ _____      |"
-                DB 13,10,               "        |     |  _ \|  _ \|_ _/ ___| ____|     |"
-                DB 13,10,               "        |     | |_) | |_) || | |   |  _|       |"
-                DB 13,10,               "        |     |  __/|  _ < | | |___| |___      |"
-                DB 13,10,               "        |     |_|   |_| \_\___\____|_____|     |"
-                DB 13,10,               "        |                                      |"
-                DB 13,10,               "        ========================================$"
-
-    GUEST_TXT2      DB 13,10,13,10,         "          These are the details of your purchases $"
-    GUEST_TXT3      DB 13,10,               "    Starting Point :        $"
-    GUEST_TXT4      DB 13,10,               "    Ending Point   :        $"
-    GUEST_TXT5      DB 13,10,               "    Number of station travelled :      $"
-    GUEST_TXT6      DB 13,10,               "    Number of tickets purchased :      $"
+;--------------------------------------------------------- TOP UP PAGE VARIABLES -------------------------------------------------------------;
+    TOPUP_TXT                   DB 13,10,13,10,           "          . . .~~~~=========================================~~~~. . .   "    
+                                DB 13,10,                 "                   |       _____ ___  ___   _   _ ___      |"
+                                DB 13,10,                 "                   |      |_   _/ _ \| _ \ | | | | _ \     |"
+                                DB 13,10,                 "                   |        | || (_) |  _/ | |_| |  _/     |"
+                                DB 13,10,                 "                   |        |_| \___/|_|    \___/|_|       |"
+                                DB 13,10,                 "                   |                                       |"
+                                DB 13,10,                 "          . . .~~~~=========================================~~~~. . .   $"
     
-    ; for output string
-    ATEXT       LABEL       BYTE
-    MAXTEXT      DB          10
-    ACTTEXT      DB          ?
-    STATETEXT    DB         10 DUP (0)
-          
-    STATE1          DB "KEDAH (KDH)$"
+    TOPUP_TXT2                  DB 13,10,13,10,           "        ~~~~~~~~~~~~~~~~~~~~~~~~~ MEMBER SPECIALY ~~~~~~~~~~~~~~~~~~~~~~ "
+                                DB 13,10,                 "        |                                                              |"
+                                DB 13,10,                 "        |            Current E-coin Amount :            0              |"
+                                DB 13,10,                 "        |                    (Minimum TopUp = RM10)                    |"
+                                DB 13,10,                 "        |                                                              |"
+                                DB 13,10,                 "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$"
+
+    TOPUP_TXT3                  DB 13,10,                 "                     How much would you like to top up?              "
+                                DB 13,10,                 "               1. RM 10             2. RM 20           3. RM 50      "
+                                DB 13,10,                 "               4. RM 100            5. RM 200          6. RM 300     "
+                                DB 13,10,                 "               7. RM 500            8. RM 600          9. RM 700    $"
+    
+    TOPUP_TXT4                  DB 13,10,13,10,           "                        Top-Up Choice:  $                           "
+
+    ; save user topup choice
+    TOPUP_CHOICE                DB ? 
+    TTL_TOPUP1                  DB "10$"
+    TTL_TOPUP2                  DB "20$"
+    TTL_TOPUP3                  DB "50$"
+    TTL_TOPUP4                  DB "100$"
+    TTL_TOPUP5                  DB "200$"
+    TTL_TOPUP6                  DB "300$"
+    TTL_TOPUP7                  DB "500$"
+    TTL_TOPUP8                  DB "600$"
+    TTL_TOPUP9                  DB "700$"
+    TOPUP_AMOUNT                DB 0
+
+    ; Error Messages
+    ERR_TOPUPTXT1               DB 13,10,                  "     !!! Kindly Choose a number between 1 and 9 (inclusive) !!!$"
+    S_TOPUPTXT                  DB 13,10,                  "                      TopUp Successfully!!$"
+
+;------------------------------------------------------- END TOP UP PAGE VARIABLES -----------------------------------------------------------;
+
+;------------------------------------------------------------- ROUTE OPTION PAGE -------------------------------------------------------------;
+	; declare var for route option page
+	ROUTE_MENU	DB	13,10,				"=============================== Route Option ==================================="
+				DB	13,10,13,10,13,10,	"                               Choose Route:                                   "
+				DB 	13,10,13,10, 		"                         [1] Route Kedah > Johor                               "
+				DB 	13,10, 				"                         [2] Route Johor > Kedah                               "
+				DB 	13,10,13,10,13,10,	"                  --------- Please Enter Number ---------                      "
+				DB 	13,10,				"$" 		
+	ROUTE_TXT	DB 	13,10,				"                           Your option : 	$                                   "
+				
+	ERROR_MSS1	DB	13,10,				"                        !! Please enter 1 or 2 !!                             $"
+	ROUTE_OPT	DB 	0
+
+;----------------------------------------------------------- END ROUTE OPTION PAGE -----------------------------------------------------------;
+
+;---------------------------------------------------------------- VIEW MAP PAGE --------------------------------------------------------------;
+	; declare var for view map page
+	KDH_ROUTE	DB	13,10,				"=================================== View Map ==================================="
+				DB	13,10
+				DB 	13,10,				"                               Route Kedah > Johor                             "
+				DB 	13,10, 				"$"
+	JHR_ROUTE	DB	13,10,				"=================================== View Map ==================================="
+				DB	13,10
+				DB 	13,10,				"                               Route Johor > Kedah								"
+				DB 	13,10, 				"$"			
+	VMAP_MENU	DB 	13,10,				"        |-----+------+-----+-----+-----+-----+-----+-----+-----+-----|         "
+				DB 	13,10,				"             KDH    PRK   KTN   TRG    PHG   SGR   NSN   MLK   JHR	            "	 
+				
+				DB 	13,10,13,10,		"                   [1] Kedah (KDH)        [6] Selangor (SGR)                   "
+				DB 	13,10,				"                   [2] Perak (PRK)        [7] N.Sembilan (NSN)                 "
+				DB 	13,10,				"                   [3] Kelantan (KTN)     [8] Malacca (MLK)                    "
+				DB 	13,10,				"                   [4] Terengganu (TRG)   [9] Johor (JHR)                      "
+				DB	13,10, 				"                   [5] Pahang (PHG)"
+				
+				DB 	13,10,13,10,		"                   ----------- Please Enter Number -----------                $"
+	DEP_TEXT	DB 	13,10,13,10,		"                           Department     :  $                                 "
+	DEST_TEXT	DB 	13,10, 				"                           Destination    :  $                                 "
+	TICKET_TEXT	DB 	13,10,				"                           Ticket Amount  :  $                                 "
+	B_OR_CONT	DB 	13,10,13,10,13,10,	"[B]BACK                                            PRESS ANY KEY TO CONTINUE..$"
+	ERROR_MSS2	DB	13,10,				"                   !! Invalid Input. Please insert 1 to 9 !!                  $"
+	ERROR_MSS3	DB 	13,10,				"               !! Invalid Route. This is Kedah to Johor route. !!             $"
+	ERROR_MSS4	DB 	13,10,				"               !! Invalid Route. This is Johor to Kedah route. !!             $"
+	ERROR_MSS5	DB 	13,10,				"     !! Invalid Input. MINIMUM 1 ticket and MAXIMUM 10 ticket to buy. !!      $"
+	
+	COUNT		DB	0
+	BACK_V		DB	0
+	DEPART_V 	DB	0
+	DESTIN_V	DB 	0
+	TICKET_V	DB	0
+	TICKET_V1	DB	0
+	TICKET_V2	DB	0
+	JOURNEY_V	DW 	0
+	TTL_AMT		DW 	0
+	TEN			DB 	10
+	Q1			DB	0
+	R1			DB 	0
+	Q2			DB	0
+	R2			DB 	0
+	
+;---------------------------------------------------------------- END VIEW MAP PAGE ----------------------------------------------------------;
+
+;; jw code
+;------------------------------------------------------ SHOW PRICE PAGE-----------------------------------------------------------;
+; declare var for show price page						
+	SPRICE_TXT   	DB 13,10,13,10,         "                   ========================================                    "
+					DB 13,10,               "                   |      ____  ____  ___ ____ _____      |                    "
+					DB 13,10,               "                   |     |  _ \|  _ \|_ _/ ___| ____|     |                    "
+					DB 13,10,               "                   |     | |_) | |_) || | |   |  _|       |                    "
+					DB 13,10,               "                   |     |  __/|  _ < | | |___| |___      |                    "
+					DB 13,10,               "                   |     |_|   |_| \_\___\____|_____|     |                    "
+					DB 13,10,               "                   |                                      |                    "
+					DB 13,10,               "                   ========================================                   $"
+
+    SPRICE_TXT2     DB 13,10,13,10,         "================== These are the details of your purchases =====================$"
+    SPRICE_TXT3     DB 13,10,13,10,         "                 Starting Point              :      $"
+    SPRICE_TXT4     DB 13,10,               "                 Ending Point                :      $"
+    SPRICE_TXT5     DB 13,10,               "                 Number of station travelled :      $"
+    SPRICE_TXT6     DB 13,10,               "                 Number of tickets purchased :      $" 
+	SPRICE_TXT7		DB 13,10,				"                 Sub-Total                   :      RM $"
+	SPRICE_TXT8		DB 13,10,13,10,13,10,	"                           Choose your payment method                          "
+					DB 13,10,				"                                [1] Cash                                       "
+					DB 13,10,				"                                [2] E-Coin									   $"
+	
+	STATE1          DB "KEDAH (KDH)$"
     STATE2          DB "PERAK (PRK)$"
     STATE3          DB "KELANTAN (KTN)$"
     STATE4          DB "TERENGGANU (TRG)$"
@@ -144,16 +249,38 @@
     STATE7          DB "N.SEMBILAN (NSN)$"
     STATE8          DB "MALACCA (MLK)$"
     STATE9          DB "JOHOR (JHR)$"
-    
-    STTCOUNT        DB 0
-    START_OPT       DB "1"
-    END_OPT         DB "3"
-    ; Jump Condition 
-    OCOND           DB "1"
-    TTLSTATION      DB "2"
-    TTLTICKET       DB "1"
-    CONTINUE_TXT    DB "Press any key to continue...."
+	
+	START_P			DB 	0
+	COUNT2			DB 	0
+	Q3				DB	0
+	R3				DB	0
+	PAYMENT_M		DB 	0
 ;--------------------------------------------------- END GUEST SHOW PRICE VARIABLES ----------------------------------------------------------;
+
+;------------------------------------------------------------- PAYMENT PAGE ------------------------------------------------------------------;
+	; declare var for cash payment page
+
+	PAY_TXT	    DB	13,10,				"================================= Payment Page ================================="
+				DB 	13,10,13,10,13,10, 	"                          Sub-Total       :    RM $                            "              
+	PAY_TXT2  	DB 	13,10,				"                          Member Discount :    $                               "
+	PAY_TXT3	DB	13,10,				"                          Tax Total       :    $                               "
+	PAY_TXT4	DB 	13,10,				"                          Total Amount    :    RM $                            "
+	PAY_TXT5	DB 	13,10,13,10,13,10,	"                       Enter your pay amount :     RM $                        "
+	PAY_TXT6	DB 	13,10,13,10,		"                       Cash                  :     RM $                        "
+	PAY_TXT7	DB 	13,10,				"                       Change                :     RM $                        "
+	
+	COUNT3		DB 	0
+	COUNT4		DB 	0
+	USERTYPE	DB  0
+	U_PAY1		DW 	0
+	U_PAY2		DW	0
+	U_PAY3		DW 	0
+	U_TPAY		DW	0
+	MEMBER_DIS	DB 	0
+	HUNDRED		DB	0
+	REMAIN		DW 	0
+;--------------------------------------------------------- END PAYMENT PAGE ---------------------------------------------------------------------;
+
 
 .CODE
 MAIN PROC
@@ -198,12 +325,12 @@ MAIN PROC
         CMP WELCOME_OPT, "2"
         JE REGISTER 
         CMP WELCOME_OPT, "3"
-        JE GUEST 
+        JE CHOOSEROUTE 
         CMP WELCOME_OPT, "4"
         JE SHUTDOWN
 
     ;---------------------------- LOGIN PAGE ---------------------------------;
-            LOGIN:
+    LOGIN:
         MOV AH, 00H     ; clear screen                          
         MOV AL, 02H 
         INT 10H
@@ -287,7 +414,7 @@ MAIN PROC
             MOV SI, 0
             PL3:
                 CMP SI, 8
-                JE VIEWMAP
+                JE CHOOSEROUTE
                 JNE PL1
             PL1:
                 MOV BL, PASSWORD[SI]
@@ -296,9 +423,9 @@ MAIN PROC
                 JNE SHUTDOWN
             PL2:
                 INC SI
-                JMP PL3 
+                JMP PL3
 
-    ;-------------------------= REGISTER PAGE ---------------------------------;
+    ;----------------------------- REGISTER PAGE ---------------------------------;
     REGISTER:   
         MOV DX, 0      ; clear dx
         MOV AH, 00H    ; clear screen                                 
@@ -430,70 +557,169 @@ MAIN PROC
         INT 21H     
         JMP TOPUP
 
-    TOPUP:
-        JMP SHUTDOWN
 
     VIEWMAP:
         JMP SHUTDOWN
 
-           ;-------------------------- DISPLAY GUEST PRICE PAGE --------------------------------;
-    GUEST:
-        MOV AH, 00H     ; clear screen                          
+    ;------------------------------ MEMBER TOPUP PAGE -----------------------------------;
+    TOPUP:
+        ; cls whole screen
+        MOV AH, 00H                                 
         MOV AL, 02H 
-        INT 10H
+        INT 10H 
+        ; display topup page
         MOV AH, 09H
-        ; Display Page
-        LEA DX, GUEST_TXT
+        LEA DX, TOPUP_TXT
         INT 21H
         MOV AH, 09H
-        LEA DX, GUEST_TXT2
+        LEA DX, TOPUP_TXT2
         INT 21H
-        ; output department
         MOV AH, 09H
-        LEA DX, GUEST_TXT3  
-        INT 21H             
-        JMP CSTR
-        GOUTPUT:
-            MOV SI, 0
-            MOV CL, STTCOUNT  
-            MOV CH, 0
-            OLOOP:
-                MOV AH, 02H
-                MOV DL, STATETEXT[SI]
-                INT 21H
-                INC SI
-                LOOP OLOOP
-        ; output destination
+        LEA DX, TOPUP_TXT3
+        INT 21H
         MOV AH, 09H
-        LEA DX, GUEST_TXT4
+        LEA DX, TOPUP_TXT4
         INT 21H
-        MOV OCOND, 2
-        JMP CSTR2
-        GOUTPUT2:
-            MOV SI, 0
-            MOV CL, STTCOUNT  
-            MOV CH, 0
-            OLOOP2:
-                MOV AH, 02H
-                MOV DL, STATETEXT[SI]
-                INT 21H
-                INC SI
-                LOOP OLOOP2
-        ; output number of stations travelled
+        ; ask for user topup amount
+        MOV AH, 01H      
+        INT 21H
+        MOV TOPUP_CHOICE,AL 
+        ; open topup file
+        MOV AH, 3DH
+        MOV AL, 1       ; 0 -> for reading, 1 -> for writing, 2 -> for both
+        MOV DX, OFFSET NTFILE
+        INT 21H
+        MOV HANDLE, AX
+        
+    ; validate user input range from 1-9 (inclusive)
+    CHKTOPUP:   
+        MOV BL, TOPUP_CHOICE
+        CMP BL, "1"
+        JL ERR_TOPUP
+        CMP BL, "9"
+        JG  ERR_TOPUP
+        JLE CMPTOPUP      ; jump to save to file function
+    
+    ; store user topup amount into a variable called TOPUP_AMOUNT
+    CMPTOPUP:
+        CMP TOPUP_CHOICE, "1"
+        JE T1
+        CMP TOPUP_CHOICE, "2"
+        JE T2
+        CMP TOPUP_CHOICE, "3"
+        JE T3
+        CMP TOPUP_CHOICE, "4"
+        JE T4
+        CMP TOPUP_CHOICE, "5"
+        JE T5
+        CMP TOPUP_CHOICE, "6"
+        JE T6
+        CMP TOPUP_CHOICE, "7"
+        JE T7
+        CMP TOPUP_CHOICE, "8"
+        JE T8
+        CMP TOPUP_CHOICE, "9"
+        JE T9                 
+        T1:
+            ; input text into file
+            MOV AH, 40H
+            MOV BX, HANDLE
+            MOV CX, 2     
+            MOV DX, OFFSET TTL_TOPUP1
+            INT 21H
+            JMP S_TOPUP
+        T2:
+            ; input text into file
+            MOV AH, 40H
+            MOV BX, HANDLE
+            MOV CX, 2     
+            MOV DX, OFFSET TTL_TOPUP2
+            INT 21H
+            JMP S_TOPUP
+        T3:
+            ; input text into file
+            MOV AH, 40H
+            MOV BX, HANDLE
+            MOV CX, 2     
+            MOV DX, OFFSET TTL_TOPUP3
+            INT 21H
+            JMP S_TOPUP
+        T4:
+            ; input text into file
+            MOV AH, 40H
+            MOV BX, HANDLE
+            MOV CX, 3     
+            MOV DX, OFFSET TTL_TOPUP4
+            INT 21H
+            JMP S_TOPUP
+        T5:
+            ; input text into file
+            MOV AH, 40H
+            MOV BX, HANDLE
+            MOV CX, 3     
+            MOV DX, OFFSET TTL_TOPUP5
+            INT 21H
+            JMP S_TOPUP
+        T6:
+            ; input text into file
+            MOV AH, 40H
+            MOV BX, HANDLE
+            MOV CX, 3     
+            MOV DX, OFFSET TTL_TOPUP6
+            INT 21H
+            JMP S_TOPUP
+        T7:
+            ; input text into file
+            MOV AH, 40H
+            MOV BX, HANDLE
+            MOV CX, 3     
+            MOV DX, OFFSET TTL_TOPUP7
+            INT 21H
+            JMP S_TOPUP
+        T8:
+            ; input text into file
+            MOV AH, 40H
+            MOV BX, HANDLE
+            MOV CX, 3     
+            MOV DX, OFFSET TTL_TOPUP8
+            INT 21H
+            JMP S_TOPUP
+        T9:
+            ; input text into file
+            MOV AH, 40H
+            MOV BX, HANDLE
+            MOV CX, 3     
+            MOV DX, OFFSET TTL_TOPUP9
+            INT 21H
+            JMP S_TOPUP
+
+    S_TOPUP:
+        ; close file
+        MOV AH, 3EH
+        MOV BX, HANDLE
+        INT 21H
+
         MOV AH, 09H
-        LEA DX, GUEST_TXT5
+        LEA DX, S_TOPUPTXT
+        INT 21H    
+        ;PRESS ANY KEY TO CONTINUE
+        PUSH CX
+        PUSH AX
+        PUSH DX
+        PUSH BX
+        MOV AH, 08H
         INT 21H
-        MOV AH, 02H
-        MOV DL, TTLSTATION
-        INT 21H
-        ; output numeber of tickets purchased
+        POP BX
+        POP AX
+        POP DX
+        POP CX
+        JMP CHOOSEROUTE
+    
+    ; show error message
+    ERR_TOPUP:
         MOV AH, 09H
-        LEA DX, GUEST_TXT6
+        LEA DX, ERR_TOPUPTXT1
         INT 21H
-        MOV AH, 02H
-        MOV DL, TTLTICKET
-        INT 21H
-                     
         MOV AH, 09H
         LEA DX, CONTINUE_TXT
         INT 21H
@@ -508,193 +734,570 @@ MAIN PROC
         POP AX
         POP DX
         POP CX
-        ;CLEAR SCREEN
+        JMP TOPUP           ; require user to input again
+
+
+    ;---------------------------------------- ROUTE OPTION PAGE -------------------------------------------;
+    CHOOSEROUTE:
+        ; clear screen
         MOV AH, 00H
         MOV AL, 02H
         INT 10H
-        ;JMP PAYMENT
-
-    ; Compare purchase option for display
-    CSTR:
-        CMP START_OPT, "1"
-        JE STT1
-        CMP START_OPT, "2"
-        JE STT2
-        CMP START_OPT, "3"
-        JE STT3
-        CMP START_OPT, "4"
-        JE STT4
-        CMP START_OPT, "5"
-        JE STT5
-        CMP START_OPT, "6"
-        JE STT6
-        CMP START_OPT, "7"
-        JE STT7
-        CMP START_OPT, "8"
-        JE STT8
-        CMP START_OPT, "9"
-        JE STT9 
+    	MOV AH, 09H
+		LEA DX, ROUTE_MENU
+		INT 21H
+	D_ROUTETXT:	
+		MOV AH, 09H
+		LEA DX, ROUTE_TXT
+		INT 21H
+		; get route option from user
+		MOV AH, 01H
+		INT 21H
+		MOV ROUTE_OPT, AL
+		
+		CMP ROUTE_OPT, "1"
+		JE 	VMAP_PAGE
+		CMP	ROUTE_OPT, "2"
+		JE	VMAP_PAGE
+		JNE ERRORM_RP
+	ERRORM_RP:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS1
+		INT 21H
+		JMP D_ROUTETXT
     
-    CSTR2:
-        CMP END_OPT, "1"
-        JE STT1
-        CMP END_OPT, "2"
-        JE STT2
-        CMP END_OPT, "3"
-        JE STT3
-        CMP END_OPT, "4"
-        JE STT4
-        CMP END_OPT, "5"
-        JE STT5
-        CMP END_OPT, "6"
-        JE STT6
-        CMP END_OPT, "7"
-        JE STT7
-        CMP END_OPT, "8"
-        JE STT8
-        CMP END_OPT, "9"
-        JE STT9
-       
-    
-    ; kedah
-    STT1:
-        MOV SI, 0
-        MOV CL, 11     
-        MOV CH, 0
-        MOV STTCOUNT, CL
-        
-        SWAP1:
-            MOV AL, STATE1[SI]
-            MOV STATETEXT[SI], AL
-            INC SI
-            LOOP SWAP1
-        CMP OCOND, "1"
-        JE GOUTPUT
-        JNE GOUTPUT2
+	;-----------------------------------------  VIEW MAP PAGE --------------------------------------------;
+	; display view map menu
+	VMAP_PAGE:		
+		; clear screen
+		MOV AH, 00H
+		MOV AL, 02H
+		INT 10H
+		; compare user input route option with 1 and 2
+		; to determine which route text to display
+		CMP ROUTE_OPT, "1"
+		JE	D_KROUTE	
+		CMP ROUTE_OPT, "2"
+		JE 	D_JROUTE
+	; display kedah to johor route
+	D_KROUTE:	
+		MOV AH, 09H
+		LEA DX, KDH_ROUTE
+		INT 21H
+		JMP D_VMAP
+	; display johor to kedah route
+	D_JROUTE:
+		MOV AH, 09H
+		LEA DX, JHR_ROUTE
+		INT 21H
+		JMP D_VMAP
+	; display view map menu
+	D_VMAP:
+		MOV AH, 09H
+		LEA DX, VMAP_MENU
+		INT 21H
+	; request departing point from user
+	D_DEPTEXT:
+		MOV AH, 09H
+		LEA DX, DEP_TEXT
+		INT 21H
+		MOV AH, 01H
+		INT 21H
+		MOV DEPART_V, AL
+		; validation (check input from 1 to  9)
+		CMP DEPART_V, "1"
+		JL	ERRORM_VM
+		CMP DEPART_V, "9"
+		JG 	ERRORM_VM
+		JLE D_DESTXT
+	; display error message
+	ERRORM_VM:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS2
+		INT 21H
+		JMP D_DEPTEXT
+	; request destination point from user
+	D_DESTXT:
+		MOV AH, 09H
+		LEA DX, DEST_TEXT
+		INT 21H
+		MOV AH, 01H
+		INT 21H
+		MOV DESTIN_V, AL
+		; HEX > DEC
+		SUB DEPART_V, 30H
+		SUB	DESTIN_V, 30H
+		; validation (check input from 1 to 9)
+		CMP DESTIN_V, 1
+		JL	ERRORM_VM2
+		CMP DESTIN_V, 9
+		JG 	ERRORM_VM2
+		JLE CMPROUTE
+	; display error message
+	ERRORM_VM2:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS2
+		INT 21H
+		JMP D_DESTXT
+	; check if it invalid route based on route option
+	CMPROUTE:
+		CMP ROUTE_OPT, "1"
+		JE	CHK_KROUTE
+		CMP ROUTE_OPT, "2"
+		JE 	CHK_JROUTE
+	; check kedah to johor route
+	; ensure department < destination
+	CHK_KROUTE:
+		MOV BL, DEPART_V
+		CMP BL, DESTIN_V
+		JG  ERRORM_VM3
+		JNE D_TICTXT
+	; check johor to kedah route
+	; ensure department > destination
+	CHK_JROUTE:
+		MOV BL, DEPART_V
+		CMP BL, DESTIN_V
+		JL  ERRORM_VM4
+		JNE D_TICTXT
+	; display error message if invalid
+	ERRORM_VM3:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS3
+		INT 21H
+		JMP D_DEPTEXT
+	; display error message if invalid
+	ERRORM_VM4:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS4
+		INT 21H
+		JMP D_DEPTEXT
+	; request amount ticket needed from user
+	D_TICTXT:	
+		MOV AH, 09H
+		LEA DX, TICKET_TEXT
+		INT 21H
+		MOV AH, 01H
+		INT 21H
+		MOV TICKET_V1, AL
+		SUB	TICKET_V1, 30H
+		MOV AH, 01H
+		INT 21H
+		MOV TICKET_V2, AL
+		SUB TICKET_V2, 30H
+	; check ticket (digit 1)
+	CHK_TICKET1:
+		CMP TICKET_V1, 1
+		JL	TICKET_AMT
+		CMP TICKET_V1, 9
+		JG 	TICKET_AMT
+		JNE CHK_TICKET2
+	; check ticket (digit 2)
+	CHK_TICKET2:
+		ADD TICKET_V2, 30H
+		CMP TICKET_V2, 13
+		JE	CHK_ENTER
+		JNE	TICKET_AMT
+	CHK_ENTER:
+		INC COUNT
+		; avoid double checking 
+		SUB TICKET_V2, 30H
+		MOV BL, TICKET_V1
+		MOV TICKET_V2, BL
+		MOV TICKET_V1, 0
+		JMP CAL_AMT
+	TICKET_AMT:
+		SUB TICKET_V2, 30H
+	CAL_AMT:
+		; calculate amount of ticket
+		MOV AX, 0
+		MOV AL, TICKET_V1
+		MUL TEN
+		ADD AL, TICKET_V2
+		MOV TICKET_V, AL
+		CMP COUNT2, 1
+		JE 	D_NOTICK
+		CMP COUNT, 1
+		JE 	CMPROUTE2
+		JNE CHK_TICK
+	; check if the ticket amount in the range of 1 to 10(inclusive)
+	CHK_TICK:
+		MOV BL, TICKET_V
+		CMP BL, 1
+		JL 	ERRORM_VM5
+		CMP BL, 10
+		JG 	ERRORM_VM5
+		JLE	CMPROUTE2
+	; display error message if not in the range
+	ERRORM_VM5:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS5
+		INT 21H
+		JMP D_TICTXT
+	; compare route and depends on route option to choose calculation method
+	CMPROUTE2:	
+		CMP ROUTE_OPT, "1"
+		JE	CAL_TRAVEL1
+		CMP ROUTE_OPT, "2"
+		JE 	CAL_TRAVEL2
+	; calculation1 = destination - department
+	CAL_TRAVEL1:
+		MOV BL, DESTIN_V
+		SUB BL, DEPART_V
+		MOV JOURNEY_V, BX
+		CMP START_P, 1
+		JE 	D_NOSTAT
+		JNE CAL_TOTAL
+	; calculation2 = department - destination
+	CAL_TRAVEL2:	
+		MOV BL, DEPART_V
+		SUB BL, DESTIN_V
+		MOV JOURNEY_V, BX
+		CMP START_P, 1
+		JE 	D_NOSTAT
+		JMP CAL_TOTAL
+	; multiply station travelled with its price(10)
+	CAL_TOTAL:	
+		MOV AX, 0
+		MOV AX, JOURNEY_V
+		MUL TEN
+		MOV JOURNEY_V, AX
+	; multiply station travelled price with total ticket amount
+	CAL_TTLAMT:	
+		MOV AX, JOURNEY_V
+		MUL TICKET_V
+		MOV TTL_AMT, AX
+		CMP COUNT4, 1
+		JE 	CAL_CHANGE
+		; preparing in display total amount
+		MOV AX, 0
+		MOV AX, TTL_AMT
+		DIV TEN
+		MOV Q1, AL
+		MOV R1, AH
+		MOV AX, 0
+		MOV AL, Q1
+		DIV TEN
+		MOV Q2, AL
+		MOV R2, AH
+		; dec > hex
+		ADD Q2, 30H
+		ADD R2, 30H
+		ADD R1, 30H
+		; ask user back to previous page or proceed to next page
+		MOV AH, 09H
+		LEA DX, B_OR_CONT
+		INT 21H
+		MOV AH, 07H
+		INT 21H
+		MOV BACK_V, AL
 
-    ; perak
-    STT2:
-        MOV SI, 0
-        MOV CL, 11  
-        MOV CH, 0
-        MOV STTCOUNT, CL
-        SWAP2:
-            MOV AL, STATE2[SI]
-            MOV STATETEXT[SI], AL
-            INC SI
-            LOOP SWAP2
-        CMP OCOND, 1
-        JE GOUTPUT
-        JNE GOUTPUT2
-
-    ; kelantan
-    STT3:
-        MOV SI, 0
-        MOV CL, 14   
-        MOV CH, 0
-        MOV STTCOUNT, CL
-        SWAP3:
-            MOV AL, STATE3[SI]
-            MOV STATETEXT[SI], AL
-            INC SI
-            LOOP SWAP3
-        CMP OCOND, 1
-        JE GOUTPUT
-        JNE GOUTPUT2
-
-    ; terengganu
-    STT4:
-        MOV SI, 0
-        MOV CL, 16  
-        MOV CH, 0
-        MOV STTCOUNT, CL
-        SWAP4:
-            MOV AL, STATE4[SI]
-            MOV STATETEXT[SI], AL
-            INC SI
-            LOOP SWAP4
-        CMP OCOND, 1
-        JE GOUTPUT
-        JNE GOUTPUT2
-    
-    ; pahang
-    STT5:
-        MOV SI, 0
-        MOV CL, 12  
-        MOV CH, 0
-        MOV STTCOUNT, CL
-        SWAP5:
-            MOV AL, STATE5[SI]
-            MOV STATETEXT[SI], AL
-            INC SI
-            LOOP SWAP5
-        CMP OCOND, 1
-        JE GOUTPUT
-        JNE GOUTPUT2
-
-    ; selangor
-    STT6:
-        MOV SI, 0
-        MOV CL, 14 
-        MOV CH, 0
-        MOV STTCOUNT, CL
-        SWAP6:
-            MOV AL, STATE6[SI]
-            MOV STATETEXT[SI], AL
-            INC SI
-            LOOP SWAP6
-        CMP OCOND, 1
-        JE GOUTPUT
-        JNE GOUTPUT2
-    
-    ; n.sembilan
-    STT7:
-        MOV SI, 0
-        MOV CL, 16 
-        MOV CH, 0
-        MOV STTCOUNT, CL
-        SWAP7:
-            MOV AL, STATE7[SI]
-            MOV STATETEXT[SI], AL
-            INC SI
-            LOOP SWAP7
-        CMP OCOND, 1
-        JE GOUTPUT
-        JNE GOUTPUT2
-
-    ; malacca
-    STT8:
-        MOV SI, 0
-        MOV CL, 13  
-        MOV CH, 0
-        MOV STTCOUNT, CL
-        SWAP8:
-            MOV AL, STATE8[SI]
-            MOV STATETEXT[SI], AL
-            INC SI
-            LOOP SWAP8
-        CMP OCOND, 1
-        JE GOUTPUT
-        JNE GOUTPUT2
-    
-    ; johor
-    STT9:
-        MOV SI, 0
-        MOV CL, 11  
-        MOV CH, 0
-        MOV STTCOUNT, CL
-        SWAP9:
-            MOV AL, STATE9[SI]
-            MOV STATETEXT[SI], AL
-            INC SI
-            LOOP SWAP9
-        CMP OCOND, 1
-        JE GOUTPUT
-        JNE GOUTPUT2
+    ;-------------------------- DISPLAY GUEST PRICE PAGE --------------------------------;
+    SHOWPRICE:
+        ; clear screen
+        MOV AH, 00H
+        MOV AL, 02H
+        INT 10H
+        ; display show price text
+        MOV AH, 09H
+        LEA DX, SPRICE_TXT
+        INT 21H
+        MOV AH, 09H
+        LEA DX, SPRICE_TXT2
+        INT 21H
+        ; display starting point text
+        MOV AH, 09H
+        LEA DX, SPRICE_TXT3
+        INT 21H
+        JMP LOOPING
+	; search for the starting point and ending point 
+	LOOPING:
+		ADD DEPART_V, 30H 
+		ADD DESTIN_V, 30H
+		MOV SI, 0
+		MOV BX, 0
+		MOV BL, DEPART_V
+		JMP NEXT_D
+	; match input department and destination with respective value
+	NEXT_D:	
+		MOV BH, 0
+		CMP BX, "1"
+		JE STAT1	
+		CMP BX, "2"
+		JE STAT2
+		CMP BX, "3"
+		JE STAT3
+		CMP BX, "4"
+		JE STAT4
+		CMP BX, "5"
+		JE STAT5
+		CMP BX, "6"
+		JE STAT6
+		CMP BX, "7"
+		JE STAT7
+		CMP BX, "8"
+		JE STAT8
+		CMP BX, "9"
+		JE STAT9
+	; display starting point and ending point if found
+	STAT1:
+		MOV AH, 09H
+		LEA DX, STATE1
+		INT 21H
+		JMP D_DESTIN
+	STAT2:
+		MOV AH, 09H
+		LEA DX, STATE2
+		INT 21H
+		JMP D_DESTIN
+	STAT3:
+		MOV AH, 09H
+		LEA DX, STATE3
+		INT 21H
+		JMP D_DESTIN
+	STAT4:
+		MOV AH, 09H
+		LEA DX, STATE4
+		INT 21H
+		JMP D_DESTIN
+	STAT5:
+		MOV AH, 09H
+		LEA DX, STATE5
+		INT 21H
+		JMP D_DESTIN
+	STAT6:
+		MOV AH, 09H
+		LEA DX, STATE6
+		INT 21H
+		JMP D_DESTIN
+	STAT7:
+		MOV AH, 09H
+		LEA DX, STATE7
+		INT 21H
+		JMP D_DESTIN
+	STAT8:
+		MOV AH, 09H
+		LEA DX, STATE8
+		INT 21H
+		JMP D_DESTIN
+	STAT9:
+		MOV AH, 09H
+		LEA DX, STATE9
+		INT 21H
+		JMP D_DESTIN
+	
+	; jmp here to display ending point text
+	; else , it will jmp to display number of station travelled text
+	D_DESTIN:  
+	    MOV BL, DESTIN_V
+		INC SI
+		CMP SI, 1
+		JE PRINT_T4
+		JNE STAT_TRAVEL
+	; display ending point text
+	PRINT_T4:
+		MOV AH, 09H
+		LEA DX, SPRICE_TXT4
+		INT 21H
+		JMP NEXT_D
+	; display number of station travelled text
+	STAT_TRAVEL:
+		MOV AH, 09H
+		LEA DX, SPRICE_TXT5
+		INT 21H
+		SUB DEPART_V, 30H
+		SUB DESTIN_V, 30H
+		INC START_P
+		; to cal the difference between destination and department
+		; to get number of station travelled
+		CMP ROUTE_OPT, "1"
+		JE	CAL_TRAVEL1
+		CMP ROUTE_OPT, "2"
+		JE 	CAL_TRAVEL2
+	; display number of station travelled
+	D_NOSTAT: 
+		ADD JOURNEY_V, 30H
+		MOV AH, 02H
+		MOV DX, JOURNEY_V
+		INT 21H
+		; display number of ticket purchased text
+		MOV AH, 09H
+		LEA DX, SPRICE_TXT6
+		INT 21H
+		INC COUNT2
+		JMP CAL_AMT
+	; display number of ticket purchased
+	D_NOTICK:
+		MOV AX, 0
+		MOV AL, TICKET_V
+		DIV TEN
+		MOV Q3, AL
+		MOV R3, AH
+		ADD Q3, 30H
+		ADD R3, 30H
+		MOV AH, 02H
+		MOV DL, Q3
+		INT 21H
+		MOV AH, 02H
+		MOV DL, R3
+		INT 21H
+		; display sub-total
+		MOV AH, 09H
+		LEA DX, SPRICE_TXT7
+		INT 21H
+	; display subtotal
+	D_SUBTOTAL:
+		MOV AH, 02H
+		MOV DL, Q2
+		INT 21H
+		MOV AH, 02H
+		MOV DL, R2
+		INT 21H
+		MOV AH, 02H
+		MOV DL, R1
+		INT 21H
+		CMP COUNT3, 1
+		JE 	D_PAYTXT2	; jmp to member disc text
+		CMP COUNT3, 3
+		JE 	D_PAYTXT5
+		; display choose payment menu
+		MOV AH, 09H
+		LEA DX, SPRICE_TXT8
+		INT 21H
+		MOV AH, 07H
+		INT 21H
+		MOV PAYMENT_M, AL
 
     ;---------------------------------  DISPLAY PAYMENT PAGE -----------------------------------------;
+    ; clear screen
+    MOV AH, 00H
+    MOV AL, 02H
+    INT 10H
+    ; display sub total text
+    MOV AH, 09H
+    LEA DX, PAY_TXT
+    INT 21H
+    INC COUNT3		; count3 = 1
+    JMP D_SUBTOTAL  ; to display subtotal
+	; display member discount text
+	D_PAYTXT2:
+		MOV AH, 09H
+		LEA DX, PAY_TXT2
+		INT 21H
+		; compare usertype = guest(0) or member(1)
+		CMP USERTYPE, 0
+		JE 	U_GUEST
+		CMP USERTYPE, 1
+		JE 	U_MEMBER
+		
+    ; if usertype == guest
+    ; display 0 for member discount
+	U_GUEST:
+		MOV AH, 02H
+		MOV DL, "0"
+		INT 21H
+		CMP COUNT3, 2
+		JE 	D_PAYTXT4
+		JNE D_PAYTXT3
+		
+    ; if usertype == member
+    ; calculate member discount
+	U_MEMBER:
+        JMP SHUTDOWN
+	
+    ;  display tax total
+	D_PAYTXT3:
+		MOV AH, 09H
+		LEA DX, PAY_TXT3
+		INT 21H
+		INC COUNT3   		; count3 = 2
+		; compare usertype = guest(0) or member(1)
+		CMP USERTYPE, 0
+		JE 	U_GUEST
+		CMP USERTYPE, 1
+		JE 	U_GUEST
+		
+		; display total amount text
+	D_PAYTXT4:
+		MOV AH, 09H
+		LEA DX, PAY_TXT4
+		INT 21H
+		
+		; compare usertype = guest(0) or member(1)
+		CMP USERTYPE, 0
+		JE 	TA_GUEST
+		CMP USERTYPE, 1
+		JE 	TA_MEMBER
+		
+	TA_GUEST:
+		INC COUNT3			; count3 = 3
+		JMP D_SUBTOTAL	
 
-
+		
+	TA_MEMBER:
+        JMP SHUTDOWN
+	
+    ; request user input pay amount
+	D_PAYTXT5:
+		MOV AH, 09H
+		LEA DX, PAY_TXT5
+		INT 21H
+		; user input pay amount (digit 1)
+		MOV AH, 01H
+		INT 21H
+		MOV U_PAY1, AX
+		; user input pay amount (digit 2)
+		MOV AH, 01H
+		INT 21H
+		MOV U_PAY2, AX
+		; user input pay amount (digit 3)
+		MOV AH, 01H
+		INT 21H
+		MOV U_PAY3, AX
+		; display cash text
+		MOV AH, 09H
+		LEA DX, PAY_TXT6
+		INT 21H
+		MOV AH, 02H
+		MOV DX, U_PAY1
+		INT 21H
+		MOV AH, 02H
+		MOV DX, U_PAY2
+		INT 21H
+		MOV AH, 02H
+		MOV DX, U_PAY3
+		INT 21H
+		; hex > dec
+		SUB U_PAY1, 30H
+		SUB U_PAY2, 30H
+		SUB U_PAY3, 30H
+		MOV AX, 0
+		MOV AX, U_PAY1
+		MUL HUNDRED
+		MOV U_PAY1, AX
+		MOV AX, U_PAY2
+		MUL TEN
+		MOV U_PAY2, AX
+		MOV BX, U_PAY1
+		ADD BX, U_PAY2
+		ADD BX, U_PAY3
+		MOV U_TPAY, BX
+		; display change text
+		MOV AH, 09H
+		LEA DX, PAY_TXT7
+		INT 21H
+		INC COUNT4
+		JMP CAL_TTLAMT
+		
+	CAL_CHANGE:		
+		MOV AX, 0
+		MOV BX, U_TPAY
+		SUB BX, TTL_AMT
+		; here got prob can only display weird stuff and no support up to 3 digit calculation
+		ADD BX, 30H
+		MOV AH, 02H
+		MOV DX, BX
+		INT 21H
+		
 
     ; Code End---------------------------------------------------------------------------------------------------------------------------------;
 
