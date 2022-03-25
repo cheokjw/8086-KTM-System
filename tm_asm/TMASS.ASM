@@ -1,6 +1,6 @@
-.MODEL SMALL
+                                                                                                                     .MODEL SMALL
 .STACK 100
-.386
+
 .DATA
 	;-------------------------------------------------------- route option page -----------------------------------------------------;
 	; declare var for route option page
@@ -883,7 +883,7 @@ MAIN PROC
 		; move 0 into pay amount digit2
 	SWITCH_VALUE1:
 		MOV BX, 0
-		MOV BX, U_PAY2
+		MOV BX, U_PAY1
 		MOV U_PAY3, BX
 		MOV U_PAY1, 30H
 		MOV U_PAY2, 30H
