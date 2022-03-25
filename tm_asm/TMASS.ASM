@@ -78,9 +78,6 @@
     SPRICE_TXT5     DB 13,10,               "                 Number of station travelled :      $"
     SPRICE_TXT6     DB 13,10,               "                 Number of tickets purchased :      $" 
 	SPRICE_TXT7		DB 13,10,				"                 Sub-Total                   :      RM $"
-	SPRICE_TXT8		DB 13,10,13,10,13,10,	"                           Choose your payment method                          "
-					DB 13,10,				"                                [1] Cash                                       "
-					DB 13,10,				"                                [2] E-Coin									   $"
 	
 	STATE1          DB "KEDAH (KDH)$"
     STATE2          DB "PERAK (PRK)$"
@@ -96,7 +93,7 @@
 	COUNT2			DB 	0
 	Q3				DB	0
 	R3				DB	0
-	PAYMENT_M		DB 	0
+	
 
 	;-------------------------------------------------- Payment Page -----------------------------------------------------------;
 	; declare var for cash payment page
@@ -106,6 +103,7 @@
 	PAY_TXT2  		DB 	13,10,				"                          Member Discount :    $                               "
 	PAY_TXT3		DB	13,10,				"                          Tax Total       :    $                               "
 	PAY_TXT4		DB 	13,10,				"                          Total Amount    :    RM $                            "
+	ECOIN_BALANCE	DB 	13,10,				"                          E-Coin Balance  :    $                               "
 	PAY_TXT5		DB 	13,10,13,10,13,10,	"                       Enter your pay amount :     RM $                        "
 	PAY_TXT6		DB 	13,10,13,10,		"                       Cash                  :     RM $                        "
 	PAY_TXT7		DB 	13,10,				"                       Change                :     RM $                        "
@@ -117,7 +115,7 @@
 	
 	COUNT3			DB 	0
 	COUNT4			DB 	0
-	USERTYPE		DB  0 ; later ny change when compile if jw code
+	USERTYPE		DB  1 ; later ny change when compile if jw code
 	USER_AGE		DB  1 ; later ny change when compile if jw code
 	DIS_FIFTYTXT	DB 	"50%$"
 	DIS_NINTYTXT	DB 	"10%$"
@@ -146,8 +144,18 @@
 	TOPUP_VALUE		DB 	0
 	
 
-	; delete it !!!!! after compile the code
-	TBUFFER			DW	3 DUP (0), "$"
+	
+	
+	; File Variable (Read and write)
+    NUFILE                      DB 'USERNAME.TXT', 0
+    NPFILE                      DB 'PASSWORD.TXT', 0
+    NAFILE                      DB 'AGE.TXT', 0
+    NTFILE                      DB 'TOPUP.TXT', 0
+    HANDLE                      DW       ?              ; This would be the file handle, the number that DOS assigns to open file
+    HANDLE2                     DW       ?
+    BUFFER                      DB 8 DUP (0), "$"       ; Make a plain buffer 
+    TBUFFER                     DW 3 DUP (0), "$"       ; buffer for topup (DW for calculation)
+    ABUFFER                     DB 2 DUP (0), "$"       ; buffer for age
 	
 .CODE
 MAIN PROC
@@ -660,21 +668,6 @@ MAIN PROC
 		CMP COUNT3, 3
 		JE 	D_PAYTXT5	; jmp to ask user to input pay amount
 		
-		CMP USERTYPE, 0
-		JE	D_CONTINUE2
-		CMP USERTYPE, 1
-		JE 	CHOOSE_PAYMENT
-		
-	CHOOSE_PAYMENT:
-		; display choose payment menu
-		MOV AH, 09H
-		LEA DX, SPRICE_TXT8
-		INT 21H
-		
-		MOV AH, 07H
-		INT 21H
-		MOV PAYMENT_M, AL
-		
 	D_CONTINUE2:
 		MOV AH, 09H
 		LEA DX, B_OR_CONT
@@ -819,6 +812,38 @@ MAIN PROC
 		MOV AH, 02H
 		MOV DL, R4
 		INT 21H
+		
+		; if usertype
+		CMP USERTYPE, 0
+		JE 	D_PAYTXT5
+		CMP USERTYPE, 1
+		JE 	D_ECOIN
+		
+	D_ECOIN:
+		MOV AH, 09H
+		LEA DX, ECOIN_BALANCE
+		INT 21H
+		
+		; ; Load topup from file
+        ; MOV AH,3DH
+        ; LEA DX, NTFILE
+        ; MOV AL,0  ; 0 -> reading purpose
+        ; INT 21H
+        ; MOV HANDLE,AX
+        ; MOV AH,3FH  ; read from file
+        ; MOV BX,HANDLE
+        ; MOV DX,OFFSET(TBUFFER)   ; store string into buffer
+        ; MOV CX,8
+        ; INT 21H
+        ; ; close file
+        ; MOV AH, 3EH
+        ; MOV BX, HANDLE
+        ; INT 21H
+
+        ; MOV AH, 09H
+        ; MOV DX, OFFSET TBUFFER
+        ; INT 21H
+		
 		
 		; request user input pay amount
 	D_PAYTXT5:
@@ -1041,12 +1066,10 @@ MAIN ENDP
 
 ; havent done:
 ;          validation
-;          need to deduct one zero infront for each input start from show price page to payment page
+;          
 ; 		   each page back and proceed havent do (compare any key with B ; if B then will back to previous page)
-; 		   input validation for payment page:
-; 											
-; 											- [for each input] -- if user input 1/ 2 digit ny  then need to put enter behind and add zero infront
-
+; 			need to deduct one zero infront for each input start from show price page to payment page
+; 		   
 
 		;-------------------------------
 		; this if for retrieve file input 
