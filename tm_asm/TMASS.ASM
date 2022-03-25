@@ -101,25 +101,53 @@
 	;-------------------------------------------------- Payment Page -----------------------------------------------------------;
 	; declare var for cash payment page
 
-	PAY_TXT	    DB	13,10,				"================================= Payment Page ================================="
-				DB 	13,10,13,10,13,10, 	"                          Sub-Total       :    RM $                            "              
-	PAY_TXT2  	DB 	13,10,				"                          Member Discount :    $                               "
-	PAY_TXT3	DB	13,10,				"                          Tax Total       :    $                               "
-	PAY_TXT4	DB 	13,10,				"                          Total Amount    :    RM $                            "
-	PAY_TXT5	DB 	13,10,13,10,13,10,	"                       Enter your pay amount :     RM $                        "
-	PAY_TXT6	DB 	13,10,13,10,		"                       Cash                  :     RM $                        "
-	PAY_TXT7	DB 	13,10,				"                       Change                :     RM $                        "
+	PAY_TXT	    	DB	13,10,				"================================= Payment Page ================================="
+					DB 	13,10,13,10,13,10, 	"                          Sub-Total       :    RM $                            "              
+	PAY_TXT2  		DB 	13,10,				"                          Member Discount :    $                               "
+	PAY_TXT3		DB	13,10,				"                          Tax Total       :    $                               "
+	PAY_TXT4		DB 	13,10,				"                          Total Amount    :    RM $                            "
+	PAY_TXT5		DB 	13,10,13,10,13,10,	"                       Enter your pay amount :     RM $                        "
+	PAY_TXT6		DB 	13,10,13,10,		"                       Cash                  :     RM $                        "
+	PAY_TXT7		DB 	13,10,				"                       Change                :     RM $                        "
+	ERROR_MSS6		DB 	13,10,				"  Invalid input. Kindly enter pay amount greater than or equal  total amount  $"
+	TOPUP_OPTION 	DB 	13,10,				"                                Wish to top up?                                "
+					DB 	13,10,				"                                   [1] Yes                                     "
+					DB 	13,10, 				"                                   [2] No                                     $"
+	TOPUP_TXT		DB 	13,10,				"                            Enter your option:    $                            "
 	
-	COUNT3		DB 	0
-	COUNT4		DB 	0
-	USERTYPE	DB  0
-	U_PAY1		DW 	0
-	U_PAY2		DW	0
-	U_PAY3		DW 	0
-	U_TPAY		DW	0
-	MEMBER_DIS	DB 	0
-	HUNDRED		DB	0
-	REMAIN		DW 	0
+	COUNT3			DB 	0
+	COUNT4			DB 	0
+	USERTYPE		DB  0 ; later ny change when compile if jw code
+	USER_AGE		DB  1 ; later ny change when compile if jw code
+	DIS_FIFTYTXT	DB 	"50%$"
+	DIS_NINTYTXT	DB 	"10%$"
+	MEMBER_DISC		DW 	0
+	Q4				DB	0
+	R4				DB	0
+	Q5				DB	0
+	R5				DB	0
+	Q6				DB	0
+	R6				DB	0
+	Q7				DB	0
+	R7				DB	0
+	U_PAY1			DW 	0
+	U_PAY2			DW	0
+	U_PAY3			DW 	0
+	U_TPAY			DW	0
+	U_HUNDRED		DW	0
+	HUN_VALUE		DW	0
+	TEN_VALUE		DW 	0
+	CHANGE			DW 	0
+	HUNDRED			DW	100
+	TEN_W           DW  10
+	FIFTY			DW 	50
+	NINTY			DW 	90
+	REMAIN			DW 	0
+	TOPUP_VALUE		DB 	0
+	
+
+	; delete it !!!!! after compile the code
+	TBUFFER			DW	3 DUP (0), "$"
 	
 .CODE
 MAIN PROC
@@ -148,17 +176,28 @@ MAIN PROC
 		INT 21H
 		MOV ROUTE_OPT, AL
 		
+		; compare route option input by user with 1 and 2
 		CMP ROUTE_OPT, "1"
-		JE 	VMAP_PAGE
+		JE 	D_CONTINUE1
 		CMP	ROUTE_OPT, "2"
-		JE	VMAP_PAGE
+		JE	D_CONTINUE1
 		JNE ERRORM_RP
 		
+		; display error message if not 1 or 2
 	ERRORM_RP:
 		MOV AH, 09H
 		LEA DX, ERROR_MSS1
 		INT 21H
 		JMP D_ROUTETXT
+		
+	D_CONTINUE1:	
+		MOV AH, 09H
+		LEA DX, B_OR_CONT
+		INT 21H
+		
+		MOV AH, 07H
+		INT 21H
+		
 		
 		;----------------- View Map Page --------------------;
 		; display view map menu
@@ -195,7 +234,6 @@ MAIN PROC
 		MOV AH, 09H
 		LEA DX, VMAP_MENU
 		INT 21H
-	
 	
 		; request departing point from user
 	D_DEPTEXT:
@@ -396,8 +434,6 @@ MAIN PROC
 		MOV AX, JOURNEY_V
 		MUL TICKET_V
 		MOV TTL_AMT, AX
-		CMP COUNT4, 1
-		JE 	CAL_CHANGE
 		
 		; preparing in display total amount
 		MOV AX, 0
@@ -426,7 +462,7 @@ MAIN PROC
 		INT 21H
 		MOV BACK_V, AL
 		
-		; ----------------- Show Price Page (Member) --------------------;
+		; ----------------- Show Price Page --------------------;
 		; clear screen
 		MOV AH, 00H
 		MOV AL, 02H
@@ -620,10 +656,16 @@ MAIN PROC
 		INT 21H
 		
 		CMP COUNT3, 1
-		JE 	D_PAYTXT2	; jmp to member disc text
+		JE 	D_PAYTXT2	; jmp to display member discount
 		CMP COUNT3, 3
-		JE 	D_PAYTXT5
+		JE 	D_PAYTXT5	; jmp to ask user to input pay amount
 		
+		CMP USERTYPE, 0
+		JE	D_CONTINUE2
+		CMP USERTYPE, 1
+		JE 	CHOOSE_PAYMENT
+		
+	CHOOSE_PAYMENT:
 		; display choose payment menu
 		MOV AH, 09H
 		LEA DX, SPRICE_TXT8
@@ -633,7 +675,15 @@ MAIN PROC
 		INT 21H
 		MOV PAYMENT_M, AL
 		
-		; ----------------- Payment Page --------------------;
+	D_CONTINUE2:
+		MOV AH, 09H
+		LEA DX, B_OR_CONT
+		INT 21H
+		
+		MOV AH, 07H
+		INT 21H
+		
+		; ----------------- Payment Page --------------------;	
 		; clear screen
 		MOV AH, 00H
 		MOV AL, 02H
@@ -672,7 +722,40 @@ MAIN PROC
 		; if usertype == member
 		; calculate member discount
 	U_MEMBER:
-	
+		CMP USER_AGE, 0 ; 0 is age < 20 or age > 60
+		JE 	CAL_DISCOUNT0
+		CMP USER_AGE, 1 ; 1 is age 20 <= age <= 60
+		JE 	CAL_DISCOUNT1
+		
+		; age < 20 or age > 60 (*0.5)
+	CAL_DISCOUNT0:
+		; display 50 % 
+		MOV AH, 09H
+		LEA DX, DIS_FIFTYTXT
+		INT 21H
+		
+		;  mutiply subtotal with 50 percent
+		MOV AX, 0
+		MOV AX, TTL_AMT
+		MUL FIFTY
+		DIV HUNDRED
+		MOV MEMBER_DISC, AX
+		JMP D_PAYTXT3
+		
+		; age 20 <= age <= 60 (*0.9)
+	CAL_DISCOUNT1:
+		; display 10%
+		MOV AH, 09H
+		LEA DX, DIS_NINTYTXT
+		INT 21H
+		
+		; mutiply subtotal with 10 percent
+		MOV AX, 0
+		MOV AX, TTL_AMT
+		MUL NINTY
+		DIV HUNDRED
+		MOV MEMBER_DISC, AX
+		JMP D_PAYTXT3
 	
 		;  display tax total
 	D_PAYTXT3:
@@ -683,9 +766,9 @@ MAIN PROC
 		INC COUNT3   		; count3 = 2
 		; compare usertype = guest(0) or member(1)
 		CMP USERTYPE, 0
-		JE 	U_GUEST
-		CMP USERTYPE, 1
-		JE 	U_GUEST
+		JE 	U_GUEST  		; display 0 for tax total if is guest 
+		CMP USERTYPE, 1		
+		JE 	U_GUEST			; display 0 for tax total if is member
 		
 		; display total amount text
 	D_PAYTXT4:
@@ -699,14 +782,44 @@ MAIN PROC
 		CMP USERTYPE, 1
 		JE 	TA_MEMBER
 		
+		; display total amount for guest
 	TA_GUEST:
 		INC COUNT3			; count3 = 3
 		JMP D_SUBTOTAL	
 
-		
+		; display total amount for member
 	TA_MEMBER:
+		; separate into digit
+		MOV AX, 0
+		MOV AX, MEMBER_DISC
+		DIV TEN
+		MOV Q4, AL
+		MOV R4, AH
+		
+		MOV AX, 0
+		MOV AL, Q4
+		DIV TEN 
+		MOV Q5, AL
+		MOV R5, AH
+		
+		; dec > hex
+		ADD Q5, 30H
+		ADD R5, 30H
+		ADD R4, 30H
+		
+		; display total amount
+		MOV AH, 02H
+		MOV DL, Q5
+		INT 21H
 	
-	
+		MOV AH, 02H
+		MOV DL, R5
+		INT 21H
+		
+		MOV AH, 02H
+		MOV DL, R4
+		INT 21H
+		
 		; request user input pay amount
 	D_PAYTXT5:
 		MOV AH, 09H
@@ -715,24 +828,176 @@ MAIN PROC
 		
 		; user input pay amount (digit 1)
 		MOV AH, 01H
-		INT 21H
+		INT 21H 
+		MOV AH, 0
 		MOV U_PAY1, AX
 		
 		; user input pay amount (digit 2)
 		MOV AH, 01H
-		INT 21H
+		INT 21H  
+		MOV AH, 0
 		MOV U_PAY2, AX
 		
 		; user input pay amount (digit 3)
 		MOV AH, 01H
-		INT 21H
+		INT 21H   
+		MOV AH, 0
 		MOV U_PAY3, AX
+		
+		; check if user input enter 
+		CMP U_PAY2, 13
+		JE 	SWITCH_VALUE1
+		CMP U_PAY3, 13
+		JE 	SWITCH_VALUE2
+		JNE	HEX_TO_DEC
+		
+		; if pay amount digit  is enter
+		; pay amount digit2 value move into pay amount digit3
+		; move 0 into pay amount digit1
+		; move 0 into pay amount digit2
+	SWITCH_VALUE1:
+		MOV BX, 0
+		MOV BX, U_PAY2
+		MOV U_PAY3, BX
+		MOV U_PAY1, 0
+		MOV U_PAY2, 0
+		JMP HEX_TO_DEC	
+		
+		; pay amount digit2 value move into pay amount digit3
+		; pay amount digit1 value move into pay amount digit2
+		; 0 move into pay amount digit1
+	SWITCH_VALUE2:
+		MOV BX, 0
+		MOV BX, U_PAY2
+		MOV U_PAY3, BX
+		
+		MOV BX, 0
+		MOV BX, U_PAY1
+		MOV U_PAY2, BX
+		
+		MOV U_PAY1, 0
+		JMP HEX_TO_DEC	
+		
+		
+	HEX_TO_DEC:	
+		; convert 3 input digit into a number
+		; hex > dec
+		SUB U_PAY1, 30H
+		SUB U_PAY2, 30H
+		SUB U_PAY3, 30H
+		
+		; input digit1 *= 100
+		MOV AX, 0
+		MOV AX, U_PAY1
+		MUL HUNDRED
+		MOV U_HUNDRED, AX
+		
+		; input digit2 *= 10
+		; total input digit = input digit2 + input digit1 + input digit3
+		MOV AX, 0
+		MOV AX, U_PAY2
+		MUL TEN
+		ADD AX, U_HUNDRED
+		ADD AX, U_PAY3
+		MOV U_TPAY, AX
+		 
+		CMP USERTYPE, 0
+		JE 	CHK_TOTALPAY0
+		CMP USERTYPE, 1
+		JE 	CHK_TOTALPAY1
+		
+		; check total pay amount when usertype is guest(0)
+	CHK_TOTALPAY0:
+		MOV BX, 0
+		MOV BX, U_TPAY
+		CMP BX, TTL_AMT
+		JL 	D_ERRORMESS1
+		JGE CAL_CHANGE
+		
+		; display error message when pay amount < total amount
+	D_ERRORMESS1:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS6 
+		INT 21H
+		JMP D_PAYTXT5
+		
+		; check total pay amount when usertype is member(1)
+	CHK_TOTALPAY1:	
+		MOV BX, 0
+		MOV BX, U_TPAY
+		CMP BX, MEMBER_DISC
+		JL 	D_ERRORMESS2
+		JGE CONVERT
+	
+	D_ERRORMESS2:
+		; display error message when pay amount < total amount
+		MOV AH, 09H
+		LEA DX, ERROR_MSS6
+		INT 21H
+		
+		; ask user whether want to TOP UP or not
+		MOV AH, 09H
+		LEA DX, TOPUP_OPTION
+		INT 21H
+		
+		MOV AH, 09H
+		LEA DX, TOPUP_TXT
+		INT 21H
+		
+		MOV AH, 01H
+		INT 21H    
+		MOV AH, 0
+		MOV TOPUP_VALUE, AL
+		
+		MOV BX, 0
+		MOV BL, TOPUP_VALUE
+		CMP BL, "1"
+		JE 	TOPUP_PAGE
+		CMP BL, "2"
+		JE 	D_PAYTXT5
+		
+		; transfer MEMBER_DISC value to TTL_AMT
+	CONVERT:	
+		MOV BX, 0
+		MOV BX, MEMBER_DISC
+		MOV TTL_AMT, BX
+		JMP CAL_CHANGE
+		
+		; charge = user input pay amount - total amount
+	CAL_CHANGE:	 
+		MOV AX, 0
+		MOV AX, U_TPAY
+		SUB AX, TTL_AMT
+		MOV CHANGE, AX
+		
+		; prepare to display charge
+		MOV AX, 0
+		MOV AX, CHANGE
+		DIV TEN_W
+		MOV Q6, AL
+		MOV R6, AH
+
+		MOV AX, 0
+		MOV AL, Q6
+		DIV TEN
+		MOV Q7, AL
+		MOV R7, AH
+
+		ADD Q7, 30H
+		ADD R7, 30H
+		ADD R6, 30H
 		
 		; display cash text
 		MOV AH, 09H
 		LEA DX, PAY_TXT6
 		INT 21H
 		
+		; hex > dec
+		ADD U_PAY1, 30H
+		ADD U_PAY2, 30H
+		ADD U_PAY3, 30H
+		
+		; display pay amount/cash input by user
 		MOV AH, 02H
 		MOV DX, U_PAY1
 		INT 21H
@@ -745,45 +1010,27 @@ MAIN PROC
 		MOV DX, U_PAY3
 		INT 21H
 		
-		
-		; hex > dec
-		SUB U_PAY1, 30H
-		SUB U_PAY2, 30H
-		SUB U_PAY3, 30H
-		
-		; 
-		MOV AX, 0
-		MOV AX, U_PAY1
-		MUL HUNDRED
-		MOV U_PAY1, AX
-		
-		MOV AX, U_PAY2
-		MUL TEN
-		MOV U_PAY2, AX
-		
-		MOV BX, U_PAY1
-		ADD BX, U_PAY2
-		ADD BX, U_PAY3
-		MOV U_TPAY, BX
-		
 		; display change text
 		MOV AH, 09H
 		LEA DX, PAY_TXT7
 		INT 21H
 		
-		INC COUNT4
-		JMP CAL_TTLAMT
-		
-	CAL_CHANGE:		
-		MOV AX, 0
-		MOV BX, U_TPAY
-		SUB BX, TTL_AMT
-		
-		; here got prob can only display weird stuff and no support up to 3 digit calculation
-		ADD BX, 30H
+		; print out the change
 		MOV AH, 02H
-		MOV DX, BX
+		MOV DL, Q7
 		INT 21H
+		
+		MOV AH, 02H
+		MOV DL, R7
+		INT 21H
+		
+		MOV AH, 02H
+		MOV DL, R6
+		INT 21H
+		
+		;-------------------------------------TOPUP PAGE-------------------------------------------------;
+	TOPUP_PAGE:	
+	
 		
 
 	MOV AX,4C00H
@@ -791,10 +1038,35 @@ MAIN PROC
 MAIN ENDP  
 	END MAIN
 	
-; payment page 
-; validation, last part calculation, membershipz
 
-; showprice page
-; need to deduct zero infront
+; havent done:
+;          validation
+;          need to deduct one zero infront for each input start from show price page to payment page
+; 		   each page back and proceed havent do (compare any key with B ; if B then will back to previous page)
+; 		   input validation for payment page:
+; 											
+; 											- [for each input] -- if user input 1/ 2 digit ny  then need to put enter behind and add zero infront
 
-; each page back and proceed havent do 
+
+		;-------------------------------
+		; this if for retrieve file input 
+		
+		; MOV AX, 0
+		; MOV AX, TBUFFER[0]
+		; MUL HUNDRED
+		; MOV HUN_VALUE, AX
+
+		; MOV AX, 0
+		; MOV AX, TBUFFER[1]
+		; MUL TEN
+		; MOV TEN_VALUE, AX
+
+		; MOV BX, 0
+		; MOV BX, HUN_VALUE
+		; ADD BX, TEN_VALUE
+		; ADD BX, TBUFFER[2]
+
+		; ; DO VALIDATION HERE EITHER USER PAY > TTL AMT OR < TTL AMT!!!!!!!!!
+		; SUB BX, TTL_AMT
+		; MOV CHANGE, BX
+		;---------------------------------------
