@@ -3,32 +3,69 @@
 .STACK 100H
 .386
 .DATA
+
+;--------------------------------------------------------- LOGO PAGE ------------------------------------------------------------------------;
+    LOGO_TXT                    DB 13,10,13,10,13,10,           "              ______________                                                 "
+                                DB 13,10,                       "              | ---------- |                                                 "
+                                DB 13,10,                       "       _______|____________|_______                                          "
+                                DB 13,10,                       "      /  __________________________ \                                        "
+                                DB 13,10,                       "     |  | |_____|| () '.......'.' |  |                                       "
+                                DB 13,10,                       "     |  | |_____|| ()  ________   |  |                                       "         
+                                DB 13,10,                       "     |  | |     ||    |        |  |  |        ____  __.________________      "
+                                DB 13,10,                       "     |  | |_____||    |________|  |  |       |    |/ _|\__    ___/     \     "
+                                DB 13,10,                       "     |  | ........................|  |       |      <    |    | /  \ /  \    "
+                                DB 13,10,                       "     |  |_________________________|  |       |    |  \   |    |/    Y    \   "
+                                DB 13,10,                       "     |     =====    =====   =====    |       |____|__ \  |____|\____|__  /   "
+                                DB 13,10,                       "     |          ____________         |              \/                \/     "
+                                DB 13,10,                       "     |          \ I I I I  /         |        _____/\  _______.___   _____   "
+                                DB 13,10,                       "     |           \        /          |       /     )/ /   ___/|   | /  _  \  "
+                                DB 13,10,                       "     |    ()       ------      ()    |      /  \ /  \ \___  \ |   |/  /_\  \ "
+                                DB 13,10,                       "     |            ---------          |     /    Y    \/      \|   /    |    \"
+                                DB 13,10,                       "     |_________^___^___^___^_________|     \____|__  /_____  /|___\____|__  /"
+                                DB 13,10,                       "       |_________|[ ==.== ]|________|              \/      \/             \/ "
+                                DB 13,10,                       "           |||________________|||                                            "
+                                DB 13,10,                       "           |||________________|||             Press Any Key To Continue .... "
+                                DB 13,10,                       "          //____________________ \\                                          "
+                                DB 13,10,                       "        //                         \\                                        "
+                                DB 13,10,                       "      //___________________________  \\                                     $"
+;------------------------------------------------------- END LOGO PAGE ----------------------------------------------------------------------;
+
 ;------------------------------------------------------ WELCOME PAGES VARIABLES--------------------------------------------------------------;
     COND                        DB 1
 
-    WELCOME_TXT                 DB 13,10,                       "    /@@   /@@/@@@@@@@@/@@      /@@     /@@      /@@ /@@       /@@              "
-                                DB 13,10,                       "   | @@  /@@/__  @@__/ @@@    /@@@    | @@@    /@@@| @/      |__/              "    
-                                DB 13,10,                       "   | @@ /@@/   | @@  | @@@@  /@@@@    | @@@@  /@@@@|_/@@@@@@@ /@@  /@@@@@@     "
-                                DB 13,10,                       "   | @@@@@/    | @@  | @@ @@/@@ @@    | @@ @@/@@ @@ /@@_____/| @@ |____  @@    "
-                                DB 13,10,                       "   | @@  @@    | @@  | @@  @@@| @@    | @@  @@@| @@|  @@@@@@ | @@  /@@@@@@@    "
-                                DB 13,10,                       "   | @@\  @@   | @@  | @@\  @ | @@    | @@\  @ | @@ \____  @@| @@ /@@__  @@    "
-                                DB 13,10,                       "   | @@ \  @@  | @@  | @@ \/  | @@    | @@ \/  | @@ /@@@@@@@/| @@|  @@@@@@@    "
-                                DB 13,10,                       "   |__/  \__/  |__/  |__/     |__/    |__/     |__/|_______/ |__/ \_______/   $"
+    WELCOME_TXT                 DB 13,10,13,10,                 "                                       /@@      /@@ /@@       /@@              "
+                                DB 13,10,                       "                                      | @@@    /@@@| @/      |__/              "
+                                DB 13,10,                       "                                      | @@@@  /@@@@|_/@@@@@@@ /@@  /@@@@@@     "    
+                                DB 13,10,                       "    /@@   /@@/@@@@@@@@/@@      /@@    | @@ @@/@@ @@ /@@_____/| @@ |____  @@    " 
+                                DB 13,10,                       "   | @@  /@@/__  @@__/ @@@    /@@@    | @@  @@@| @@|  @@@@@@ | @@  /@@@@@@@    "
+                                DB 13,10,                       "   | @@ /@@/   | @@  | @@@@  /@@@@    | @@\  @ | @@ \____  @@| @@ /@@__  @@    "
+                                DB 13,10,                       "   | @@@@@/    | @@  | @@ @@/@@ @@    | @@ \/  | @@ /@@@@@@@/| @@|  @@@@@@@    "
+                                DB 13,10,                       "   | @@  @@    | @@  | @@  @@@| @@    |__/     |__/|_______/ |__/ \_______/    "
+                                DB 13,10,                       "   | @@\  @@   | @@  | @@\  @ | @@                                            $"
 
-    WELCOME_TXT2                DB 13,10,13,10,13,10,13,10,     "============================ Welcome to KTM M'sia ============================="
-                                DB 13,10,13,10,                 "                        Please choose your login option !!!                   "
-                                DB 13,10,13,10,                 "                            1.    Login as Member                             "
-                                DB 13,10,                       "                            2.    Register                                    "
-                                DB 13,10,                       "                            3.    Login as Guest                              "
-                                DB 13,10,                       "                            4.    Quit                                        "
-                                DB 13,10,13,10,                 "                (Login as Member to get MEMBER EXCLUSIVE discounts)    $"
+    WELCOME_TXT2                DB 13,10,                       "   | @@ \  @@  | @@  | @@ \/  | @@                 . . . . o o o o o           "
+                                DB 13,10,                       "   |__/  \__/  |__/  |__/     |__/                        _____      o         "
+                                DB 13,10,                       "                                                 ____====  ]OO|_n_n__][.       " 
+                                DB 13,10,                       "                                               [________]_|__|________)<       "
+                                DB 13,10,                       "                                               oo    oo  'oo OOOO-| oo\\_      "
+                                DB 13,10,                       "============================ Welcome to KTM M'sia ============================="
+                                DB 13,10,13,10,                 "                        Please choose your login option !!!                    "
+                                DB 13,10,                       "                            1.    Login as Member                              "
+                                DB 13,10,                       "                            2.    Register                                     "
+                                DB 13,10,                       "                            3.    Login as Guest                               "
+                                DB 13,10,                       "                            4.    Quit                                         "
+                                DB 13,10,                       "                (Login as Member to get MEMBER EXCLUSIVE discounts)    $"
 
-    WELCOME_OPT_TXT             DB 13,10,13,10,                 "                              Option: $"
+    WELCOME_OPT_TXT             DB 13,10,13,10,                 "                               Option: $                                       "
+
+    ; error text
+    WELCOME_ERR_TXT             DB 13,10,                       "               Please enter number between 1 and 4 (inclusive) !!!             "
+                                DB 13,10,                       "                       Press any key to continue......$                        "
 
     ; store user input
     A_WELCOME_OPT               LABEL       BYTE              ; name
-    MAX_WELCOME_OPT             DB          2                ; max length
-    ACT_WELCOME_OPT             DB          ?                ; actual length
+    MAX_WELCOME_OPT             DB          2                 ; max length
+    ACT_WELCOME_OPT             DB          ?                 ; actual length
     WELCOME_OPT                 DB          2 DUP (0)               
     ;------------------------------------------------------ END WELCOME PAGE VARIABLES ----------------------------------------------------------;
 
@@ -47,6 +84,13 @@
     USERNAME_TXT                DB 13,10,13,10,         "          Please enter your username: $"
     PASSWORD_TXT                DB 13,10,13,10,         "          Please enter your password: $"
 
+    ; error text
+    LOGIN_ERROR_TXT             DB 13,10,13,10,         "                       Please enter exactly 8 characters!!               "
+                                DB 13,10,13,10,          "             Press any key to return back to previous screen.....$       "
+    UNAME_ERROR_TXT             DB 13,10,13,10,         "                        !!! Wrong Username Entered !!!                   "
+                                DB 13,10,13,10,         "            Press any key to return back to the previous screen.....$    "
+    PASS_ERROR_TXT              DB 13,10,13,10,         "                        !!! Wrong Password Entered !!!                   "
+                                DB 13,10,13,10,         "            Press any key to return back to the previous screen.....$    "
     ; store login uername
     A_USERNAME                  LABEL       BYTE
     MAX_USERNAME                DB          9
@@ -58,12 +102,6 @@
     MAX_PASS                    DB          9
     ACT_PASS                    DB          ?
     PASSWORD                    DB          9 DUP (0)
-    
-    ; store info for validate username
-    A_VALUSERNAME               LABEL       BYTE
-    MAX_VALUSERNAME             DB          8
-    ACT_VALUSERNAME             DB          ?
-    VALUSERNAME                 DB          8 DUP (0)
 
     ; to store data from file
     PBUFFER                     DB          8 DUP (0), "$"
@@ -83,7 +121,8 @@
                                 DB 13,10,               "| @@  | @@| @@@@@@@@|  @@@@@@/ /@@@@@@|  @@@@@@/   | @@  | @@@@@@@@| @@  | @@"
                                 DB 13,10,               "|__/  |__/|________/ \______/ |______/ \______/    |__/  |________/|__/  |__/$"
 
-    REGISTER_TXT2               DB 13,10,13,10,13,10,   "================================= Register =====================================$"
+    REGISTER_TXT2               DB 13,10,13,10,13,10,   "================================= Register ====================================="
+                                DB 13,10,13,10,         "                   !!! WARNING: old user will be deleted !!!                   $"
 
     REG_NAME_TXT                DB 13,10,13,10,         "          Please register your username : $"
     REG_PASS_TXT                DB 13,10,13,10,         "          Please register your password : $"
@@ -104,6 +143,11 @@
     REG_AGE                     DB          3
                                 DB          ?
                                 DB          3 DUP (0)
+    
+    ; user age discount condition
+    USER_AGE                    DB  1
+    A1                          DB  0
+    A2                          DB  0
  
     ; File Variable (Read and write)
     NUFILE                      DB 'USERNAME.TXT', 0
@@ -113,6 +157,8 @@
     HANDLE                      DW       ?              ; This would be the file handle, the number that DOS assigns to open file
     HANDLE2                     DW       ?
     BUFFER                      DB 8 DUP (0), "$"       ; Make a plain buffer 
+    TBUFFER                     DW 3 DUP (0), "$"       ; buffer for topup (DW for calculation)
+    ABUFFER                     DB 2 DUP (0), "$"       ; buffer for age
 ;----------------------------------------------------- END REGISTER PAGE VARIABLES -----------------------------------------------------------;
 
 ;--------------------------------------------------------- TOP UP PAGE VARIABLES -------------------------------------------------------------;
@@ -123,7 +169,7 @@
                                 DB 13,10,                 "                   |        |_| \___/|_|    \___/|_|       |"
                                 DB 13,10,                 "                   |                                       |"
                                 DB 13,10,                 "          . . .~~~~=========================================~~~~. . .   $"
-    
+  
     TOPUP_TXT2                  DB 13,10,13,10,           "        ~~~~~~~~~~~~~~~~~~~~~~~~~ MEMBER SPECIALY ~~~~~~~~~~~~~~~~~~~~~~ "
                                 DB 13,10,                 "        |                                                              |"
                                 DB 13,10,                 "        |            Current E-coin Amount :            0              |"
@@ -133,41 +179,53 @@
 
     TOPUP_TXT3                  DB 13,10,                 "                     How much would you like to top up?              "
                                 DB 13,10,                 "               1. RM 10             2. RM 20           3. RM 50      "
-                                DB 13,10,                 "               4. RM 100            5. RM 200          6. RM 300     "
-                                DB 13,10,                 "               7. RM 500            8. RM 600          9. RM 700    $"
+                                DB 13,10,                 "               4. RM 100            5. RM 200          6. RM 500     "
+                                DB 13,10,                 "               7. RM 600            8. RM 700          9. RM 800    $"
     
     TOPUP_TXT4                  DB 13,10,13,10,           "                        Top-Up Choice:  $                           "
 
     ; save user topup choice
     TOPUP_CHOICE                DB ? 
-    TTL_TOPUP1                  DB "10$"
-    TTL_TOPUP2                  DB "20$"
-    TTL_TOPUP3                  DB "50$"
+    TTL_TOPUP1                  DB "010$"
+    TTL_TOPUP2                  DB "020$"
+    TTL_TOPUP3                  DB "050$"
     TTL_TOPUP4                  DB "100$"
     TTL_TOPUP5                  DB "200$"
-    TTL_TOPUP6                  DB "300$"
-    TTL_TOPUP7                  DB "500$"
-    TTL_TOPUP8                  DB "600$"
-    TTL_TOPUP9                  DB "700$"
+    TTL_TOPUP6                  DB "500$"
+    TTL_TOPUP7                  DB "600$"
+    TTL_TOPUP8                  DB "700$"
+    TTL_TOPUP9                  DB "800$"
     TOPUP_AMOUNT                DB 0
 
     ; Error Messages
     ERR_TOPUPTXT1               DB 13,10,                  "     !!! Kindly Choose a number between 1 and 9 (inclusive) !!!$"
-    S_TOPUPTXT                  DB 13,10,                  "                      TopUp Successfully!!$"
-
+    S_TOPUPTXT                  DB 13,10,13,10,            "                              TopUp Successfully!!$             "
+ 
 ;------------------------------------------------------- END TOP UP PAGE VARIABLES -----------------------------------------------------------;
 
 ;------------------------------------------------------------- ROUTE OPTION PAGE -------------------------------------------------------------;
+; design UI
 	; declare var for route option page
-	ROUTE_MENU	DB	13,10,				"=============================== Route Option ==================================="
-				DB	13,10,13,10,13,10,	"                               Choose Route:                                   "
-				DB 	13,10,13,10, 		"                         [1] Route Kedah > Johor                               "
-				DB 	13,10, 				"                         [2] Route Johor > Kedah                               "
-				DB 	13,10,13,10,13,10,	"                  --------- Please Enter Number ---------                      "
-				DB 	13,10,				"$" 		
-	ROUTE_TXT	DB 	13,10,				"                           Your option : 	$                                   "
+	ROUTE_MENU	DB  13,10,13,10,        "                       _-====-__-======-__-========-_____-============-__      "
+                DB  13,10,              "                     _(                                                 _)     "
+                DB  13,10,              "                  OO(                                                    )_    "
+                DB  13,10,              "                 0  (_            To Choose Or Not To Choose.....        _)    "
+                DB  13,10,              "                0  (_                                                   _)     "
+                DB  13,10,              "               o0     (_                                                _)     "
+                DB  13,10,              "              o         '=-___-===-_____-========-___________-===-dwb-='       "
+                DB  13,10,              "            .o                                _________                        "
+                DB  13,10,              "           . ______          ______________  |         |      _____            "
+                DB  13,10,              "         _()_||__|| ________ |            |  |_________|   __||___||__         "  
+                DB  13,10,              "        (KTM M'SIA| |      | |            | __Y______00_| |_         _|        "
+                DB  13,10,              "       /-OO----OO'''='OO--OO'='OO--------OO'='OO-------OO'='OO-------OO'=P     "
+                DB	13,10,				"=============================== Route Option ================================="
+				DB	13,10,13,10,    	"                               Choose Route:                                   "
+				DB 	13,10,       		"                          [1] Route Kedah > Johor                              "
+				DB 	13,10, 				"                          [2] Route Johor > Kedah                              "
+				DB 	13,10,          	"                   --------- Please Enter Number ---------                    $"
+	ROUTE_TXT	DB 	13,10,13,10,	    "                            Your option : 	$                                   "
 				
-	ERROR_MSS1	DB	13,10,				"                        !! Please enter 1 or 2 !!                             $"
+	ERROR_MSS1	DB	13,10,				"                        !!! Please enter 1 or 2 !!!                            $"
 	ROUTE_OPT	DB 	0
 
 ;----------------------------------------------------------- END ROUTE OPTION PAGE -----------------------------------------------------------;
@@ -201,6 +259,7 @@
 	ERROR_MSS4	DB 	13,10,				"               !! Invalid Route. This is Johor to Kedah route. !!             $"
 	ERROR_MSS5	DB 	13,10,				"     !! Invalid Input. MINIMUM 1 ticket and MAXIMUM 10 ticket to buy. !!      $"
 	
+    ; calculation purpose
 	COUNT		DB	0
 	BACK_V		DB	0
 	DEPART_V 	DB	0
@@ -220,17 +279,19 @@
 
 ;; jw code
 ;------------------------------------------------------ SHOW PRICE PAGE-----------------------------------------------------------;
+; Design UI
 ; declare var for show price page						
-	SPRICE_TXT   	DB 13,10,13,10,         "                   ========================================                    "
-					DB 13,10,               "                   |      ____  ____  ___ ____ _____      |                    "
-					DB 13,10,               "                   |     |  _ \|  _ \|_ _/ ___| ____|     |                    "
-					DB 13,10,               "                   |     | |_) | |_) || | |   |  _|       |                    "
-					DB 13,10,               "                   |     |  __/|  _ < | | |___| |___      |                    "
-					DB 13,10,               "                   |     |_|   |_| \_\___\____|_____|     |                    "
-					DB 13,10,               "                   |                                      |                    "
-					DB 13,10,               "                   ========================================                   $"
-
-    SPRICE_TXT2     DB 13,10,13,10,         "================== These are the details of your purchases =====================$"
+	SPRICE_TXT   	DB 13,10,13,10,         "  ============================================================================"
+					DB 13,10,               "  |               _.-------._                                                |"
+					DB 13,10,               "  |            _-'_.------._ `-_                                             |"
+					DB 13,10,               "  |          _- _-          `-_/       ____  ____  ___ ____ _____            |"
+					DB 13,10,               "  |         -  -                       |  _ \|  _ \|_ _/ ___| ____|          |"
+					DB 13,10,               "  |     ___/  /______________          | |_) | |_) || | |   |  _|            |"
+					DB 13,10,               "  |    /___  .______________/          |  __/|  _ < | | |___| |___           |"
+					DB 13,10,               "  |    ___| |_____________             |_|   |_| \_\___\____|_____|          |"
+                    DB 13,10,               "  |    /___  .____________/                                                  |"
+                    DB 13,10,               "  |        \  \                                                              |$"
+    SPRICE_TXT2     DB 13,10,               "  =================== These are the details of your purchases ================$"
     SPRICE_TXT3     DB 13,10,13,10,         "                 Starting Point              :      $"
     SPRICE_TXT4     DB 13,10,               "                 Ending Point                :      $"
     SPRICE_TXT5     DB 13,10,               "                 Number of station travelled :      $"
@@ -259,8 +320,16 @@
 
 ;------------------------------------------------------------- PAYMENT PAGE ------------------------------------------------------------------;
 	; declare var for cash payment page
-
-	PAY_TXT	    DB	13,10,				"================================= Payment Page ================================="
+    ; Design UI
+	PAY_TXT	    DB  13,10,13,10,        "================================================================================"
+                DB	13,10,13,10,	    "  +------+.          ____   _ __   ____  __ _____ _   _ _____        .+------+"
+                DB  13,10,              "  |`.    | `.       |  _ \ / \\ \ / /  \/  | ____| \ | |_   _|     .' |    .'|"
+                DB  13,10,              "  |  `+--+---+      | |_) / _ \\ V /| |\/| |  _| |  \| | | |      +---+--+'  |"
+                DB  13,10,              "  |   |  |   |      |  __/ ___ \| | | |  | | |___| |\  | | |      |   |  |   |"
+                DB  13,10,              "  +---+--+.  |      |_| /_/   \_\_| |_|  |_|_____|_| \_| |_|      |  .+--+---+"
+                DB  13,10,              "   `. |    `.|                                                    |.'    | .' "
+                DB  13,10,              "     `+------+                                                    +------+'   "
+                DB  13,10,13,10,        "================================= Payment Page ================================="
 				DB 	13,10,13,10,13,10, 	"                          Sub-Total       :    RM $                            "              
 	PAY_TXT2  	DB 	13,10,				"                          Member Discount :    $                               "
 	PAY_TXT3	DB	13,10,				"                          Tax Total       :    $                               "
@@ -281,6 +350,33 @@
 	REMAIN		DW 	0
 ;--------------------------------------------------------- END PAYMENT PAGE ---------------------------------------------------------------------;
 
+;---------------------------------------------------------- RECEIPT PAGE ------------------------------------------------------------------------;
+    RECEIPT_TXT         DB 13,10,                    "  .-----------------------------------------------------------------------.  "
+                        DB 13,10,                    " /   .-.       @@\     @@\           @@\                 @@\          .-.  \ "
+                        DB 13,10,                    "|  /    \      @@ |    \__|          @@ |                @@ |        /   \  |"
+                        DB 13,10,                    "| |\_.  |    @@@@@@\   @@\  @@@@@@@\ @@ |  @@\  @@@@@@\@@@@@@\      |    /| |"
+                        DB 13,10,                    "|\|  | /|    \_@@  _|  @@ |@@  _____|@@ | @@  |@@  __@@\_@@  _|     |\  | |/|"
+                        DB 13,10,                    "| `---' |      @@ |    @@ |@@ /      @@@@@@  / @@@@@@@@ |@@ |       | `---' |"
+                        DB 13,10,                    "|       |      @@ |@@\ @@ |@@ |      @@  _@@\  @@   ____|@@ |@@\    |       |"
+                        DB 13,10,                    "|       |      \@@@@ | @@ |\@@@@@@@\ @@ | \@@\ \@@@@@@@\ \@@@@  |   |       |"
+                        DB 13,10,                    "|       |       \____/ \__| \_______|\__|  \__| \_______| \____/    |       |"
+                        DB 13,10,                    "|       |  .-.-.     .-.-.     .-.-.     .-.-.     .-.-.     .-.-.  |       |"
+                        DB 13,10,                    "|       |                                                           |       |"
+                        DB 13,10,                    "|       |     Department         :            $                              "                                      
+    RECEIPT_TXT2        DB 13,10,                    "|       |                                                           |       |"
+                        DB 13,10,                    "|       |     Destination        :            $                              "        
+    RECEIPT_TXT3        DB 13,10,                    "|       |                                                           |       |"
+                        DB 13,10,                    "|       |     Ticket Amount      :            $                              "       
+    RECEIPT_TXT4        DB 13,10,                    "|       |                                                           |       |"
+                        DB 13,10,                    "|       |           !!! Wish y'all have a fun trip !!!              |       |"
+                        DB 13,10,                    "|       |                                                           |       |"
+                        DB 13,10,                    "|       |         Presented to you by   :   KTM M'sia               |       |"
+                        DB 13,10,                    "|       |                                                           |       |"
+                        DB 13,10,                    "\       |___________________________________________________________|       /"
+                        DB 13,10,                    " \     /                                                             \     / "
+                        DB 13,10,                    "  `---'                                                               `---' $"
+;----------------------------------------------------------- END RECEIPT PAGE -------------------------------------------------------------------;
+
 
 .CODE
 MAIN PROC
@@ -294,14 +390,39 @@ MAIN PROC
     MOV AL, 02H 
     INT 10H 
 
+    ; starts with logo
+    JMP LOGO
+
     ; Comparing COND to 1, if true, jump start (continue programme), else, jmp condelse (terminate programme)
     MOV AL, COND                               
     CMP AL, 1
     JE START 
     JNE SHUTDOWN  ; jump not equal
 
+    ;--------------------------------- LOGO PAGE ------------------------------;
+    LOGO:
+        MOV AH, 09H
+        LEA DX, LOGO_TXT
+        INT 21H
+
+        PUSH CX
+        PUSH AX
+        PUSH DX
+        PUSH BX
+        MOV AH, 08H
+        INT 21H
+        POP BX
+        POP AX
+        POP DX
+        POP CX
+        JMP START
+
     ;------------------------------- WELCOME PAGE ----------------------------;
     START: 
+        ; cls whole screen
+        MOV AH, 00H                                 
+        MOV AL, 02H 
+        INT 10H 
         ; Display Main Menu
         MOV AH, 09H
         LEA DX, WELCOME_TXT
@@ -322,15 +443,38 @@ MAIN PROC
         MOV AL, 0   ; clear al
         CMP WELCOME_OPT, "1"
         JE LOGIN    ; jump equal 
+        JL WELCOME_ERR
         CMP WELCOME_OPT, "2"
         JE REGISTER 
         CMP WELCOME_OPT, "3"
         JE CHOOSEROUTE 
         CMP WELCOME_OPT, "4"
         JE SHUTDOWN
+        JG WELCOME_ERR
+
+    WELCOME_ERR:
+        ; show error message and press any key to continue
+        MOV AH, 09H
+        LEA DX, WELCOME_ERR_TXT
+        INT 21H
+        PUSH CX
+        PUSH AX
+        PUSH DX
+        PUSH BX
+        MOV AH, 08H
+        INT 21H
+        POP BX
+        POP AX
+        POP DX
+        POP CX
+        JMP START
 
     ;---------------------------- LOGIN PAGE ---------------------------------;
     LOGIN:
+        ; declare usertype as member
+        MOV BL, "1"
+        MOV USERTYPE, BL
+
         MOV AH, 00H     ; clear screen                          
         MOV AL, 02H 
         INT 10H
@@ -340,27 +484,28 @@ MAIN PROC
         MOV AH, 02H     ; display carriage
         MOV DL, 10
         INT 21H
-        ; Display login page
-        MOV AH, 09H
-        LEA DX, LOGIN_TXT
-        INT 21H
-        MOV AH, 09H
-        LEA DX, LOGIN_TXT2
-        INT 21H
-        MOV AH, 09H
-        LEA DX, USERNAME_TXT
-        INT 21H
-        ; Login: Get input username
-        MOV AH, 0AH
-        MOV DX, OFFSET A_USERNAME
-        INT 21H
-        MOV AH, 09H
-        LEA DX, PASSWORD_TXT
-        INT 21H
-        ; Login: Get input password
-        MOV AH, 0AH
-        MOV DX, OFFSET A_PASS
-        INT 21H
+        LINPUT:
+            ; Display login page
+            MOV AH, 09H
+            LEA DX, LOGIN_TXT
+            INT 21H
+            MOV AH, 09H
+            LEA DX, LOGIN_TXT2
+            INT 21H
+            MOV AH, 09H
+            LEA DX, USERNAME_TXT
+            INT 21H
+            ; Login: Get input username
+            MOV AH, 0AH
+            MOV DX, OFFSET A_USERNAME
+            INT 21H
+            MOV AH, 09H
+            LEA DX, PASSWORD_TXT
+            INT 21H
+            ; Login: Get input password
+            MOV AH, 0AH
+            MOV DX, OFFSET A_PASS
+            INT 21H
 
         ; Validate username
         MOV AH,3DH
@@ -404,7 +549,7 @@ MAIN PROC
                 MOV BL, USERNAME[SI]
                 CMP BL, UBUFFER[SI]
                 JE UL2
-                JNE SHUTDOWN
+                JNE ERRUNAME
             UL2:
                 INC SI
                 JMP UL3
@@ -414,19 +559,90 @@ MAIN PROC
             MOV SI, 0
             PL3:
                 CMP SI, 8
-                JE CHOOSEROUTE
+                JE AGE_COND
                 JNE PL1
             PL1:
                 MOV BL, PASSWORD[SI]
                 CMP BL, PBUFFER[SI]
                 JE PL2
-                JNE SHUTDOWN
+                JNE ERRPASS
             PL2:
                 INC SI
                 JMP PL3
 
+        AGE_COND:
+            ; Set age discount condition
+            ; Load age from file
+            MOV AH,3DH
+            LEA DX, NAFILE
+            MOV AL,0  ; 0 -> reading purpose
+            INT 21H
+            MOV HANDLE,AX
+            MOV AH,3FH  ; read from file
+            MOV BX,HANDLE
+            MOV DX,OFFSET(ABUFFER)   ; store string into buffer
+            MOV CX,2
+            INT 21H
+            ; close file
+            MOV AH, 3EH
+            MOV BX, HANDLE
+            INT 21H
+
+            MOV SI, 0
+            MOV AX, 0
+            MOV AL, ABUFFER[SI]
+            CMP AL, "2"
+            JGE LCHK_AGE
+            JLE LAGE_DISCOUNT
+
+            LCHK_AGE:
+                CMP AL, "6"
+                JGE LAGE_DISCOUNT
+                JLE CHOOSEROUTE
+            
+            LAGE_DISCOUNT:
+                MOV BL, 0
+                MOV USER_AGE, BL
+                JMP CHOOSEROUTE
+
+        ERRUNAME:   
+            MOV AH, 09H
+            LEA DX, UNAME_ERROR_TXT
+            INT 21H
+            PUSH CX
+            PUSH AX
+            PUSH DX
+            PUSH BX
+            MOV AH, 08H
+            INT 21H
+            POP BX
+            POP AX
+            POP DX
+            POP CX
+            JMP START
+
+        ERRPASS:
+            MOV AH, 09H
+            LEA DX, PASS_ERROR_TXT
+            INT 21H
+            PUSH CX
+            PUSH AX
+            PUSH DX
+            PUSH BX
+            MOV AH, 08H
+            INT 21H
+            POP BX
+            POP AX
+            POP DX
+            POP CX
+            JMP START
+
     ;----------------------------- REGISTER PAGE ---------------------------------;
-    REGISTER:   
+    REGISTER:  
+        ; declare usertype as member
+        MOV BL, "1"
+        MOV USERTYPE, BL 
+
         MOV DX, 0      ; clear dx
         MOV AH, 00H    ; clear screen                                 
         MOV AL, 02H 
@@ -550,16 +766,45 @@ MAIN PROC
             MOV AH, 3EH
             MOV BX, HANDLE
             INT 21H
+        
+        ; Set age discount condition
+        ; Load age from file
+        MOV AH,3DH
+        LEA DX, NAFILE
+        MOV AL,0  ; 0 -> reading purpose
+        INT 21H
+        MOV HANDLE,AX
+        MOV AH,3FH  ; read from file
+        MOV BX,HANDLE
+        MOV DX,OFFSET(ABUFFER)   ; store string into buffer
+        MOV CX,2
+        INT 21H
+        ; close file
+        MOV AH, 3EH
+        MOV BX, HANDLE
+        INT 21H
+
+        MOV SI, 0
+        MOV AX, 0
+        MOV AL, ABUFFER[SI]
+        CMP AL, "2"
+        JGE RCHK_AGE1
+        JLE RAGE_DISCOUNT
+
+        RCHK_AGE1:
+            CMP AL, "6"
+            JGE RAGE_DISCOUNT
+        
+        RAGE_DISCOUNT:
+            MOV BL, 0
+            MOV USER_AGE, BL
+
 
         INT 21H
         MOV AH, 09H
         LEA DX, REG_SUCCESS
         INT 21H     
         JMP TOPUP
-
-
-    VIEWMAP:
-        JMP SHUTDOWN
 
     ;------------------------------ MEMBER TOPUP PAGE -----------------------------------;
     TOPUP:
@@ -1232,7 +1477,6 @@ MAIN PROC
 		INC COUNT3			; count3 = 3
 		JMP D_SUBTOTAL	
 
-		
 	TA_MEMBER:
         JMP SHUTDOWN
 	
@@ -1297,7 +1541,31 @@ MAIN PROC
 		MOV AH, 02H
 		MOV DX, BX
 		INT 21H
-		
+	
+    ;----------------------------------------- DISPLAY TICKET PAGE ---------------------------------------------;
+    ; TICKET:
+    ;     ; Display show ticket page
+    ;     MOV AH, 09H
+    ;     LEA DX, RECEIPT_TXT
+    ;     INT 21H
+    ;     MOV AH, 09H
+    ;     LEA DX, DEPARTMENT
+    ;     INT 21H
+    ;     MOV AH, 09H
+    ;     LEA DX, RECEIPT_TXT2
+    ;     INT 21H
+    ;     MOV AH, 09H
+    ;     LEA DX, DESTINATION
+    ;     INT 21H
+    ;     MOV AH, 09H
+    ;     LEA DX, RECEIPT_TXT3
+    ;     INT 21H
+    ;     MOV AH, 02H
+    ;     MOV DL, TICKET_AMOUNT
+    ;     INT 21H
+    ;     MOV AH, 09H
+    ;     LEA DX, RECEIPT_TXT4
+    ;     INT 21H
 
     ; Code End---------------------------------------------------------------------------------------------------------------------------------;
 
@@ -1307,3 +1575,39 @@ SHUTDOWN:
 
 MAIN ENDP
     END MAIN
+
+
+
+
+
+; ; Load topup from file
+;         MOV AH,3DH
+;         LEA DX, NTFILE
+;         MOV AL,0  ; 0 -> reading purpose
+;         INT 21H
+;         MOV HANDLE,AX
+;         MOV AH,3FH  ; read from file
+;         MOV BX,HANDLE
+;         MOV DX,OFFSET(TBUFFER)   ; store string into buffer
+;         MOV CX,8
+;         INT 21H
+;         ; close file
+;         MOV AH, 3EH
+;         MOV BX, HANDLE
+;         INT 21H
+
+; ; Load age from file
+;         MOV AH,3DH
+;         LEA DX, NAFILE
+;         MOV AL,0  ; 0 -> reading purpose
+;         INT 21H
+;         MOV HANDLE,AX
+;         MOV AH,3FH  ; read from file
+;         MOV BX,HANDLE
+;         MOV DX,OFFSET(ABUFFER)   ; store string into buffer
+;         MOV CX,8
+;         INT 21H
+;         ; close file
+;         MOV AH, 3EH
+;         MOV BX, HANDLE
+;         INT 21H
