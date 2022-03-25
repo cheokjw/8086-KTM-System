@@ -395,6 +395,7 @@ MAIN PROC
 		JL 	ERRORM_VM5
 		CMP BL, 10
 		JG 	ERRORM_VM5
+		
 		JLE	CMPROUTE2
 		
 		; display error message if not in the range
@@ -884,8 +885,8 @@ MAIN PROC
 		MOV BX, 0
 		MOV BX, U_PAY2
 		MOV U_PAY3, BX
-		MOV U_PAY1, 0
-		MOV U_PAY2, 0
+		MOV U_PAY1, 30H
+		MOV U_PAY2, 30H
 		JMP HEX_TO_DEC	
 		
 		; pay amount digit2 value move into pay amount digit3
@@ -900,7 +901,7 @@ MAIN PROC
 		MOV BX, U_PAY1
 		MOV U_PAY2, BX
 		
-		MOV U_PAY1, 0
+		MOV U_PAY1, 30H
 		JMP HEX_TO_DEC	
 		
 		
@@ -998,7 +999,7 @@ MAIN PROC
 		; prepare to display charge
 		MOV AX, 0
 		MOV AX, CHANGE
-		DIV TEN_W
+		DIV TEN
 		MOV Q6, AL
 		MOV R6, AH
 
@@ -1065,13 +1066,15 @@ MAIN ENDP
 	
 
 ; havent done:
-;          validation
+;          validation:
+; 				- VIEWMAP PAGE : ticket amount : canT input using alphabet
+;				- PAYMENT PAGE : pay amount > 0, cant input using alphabet and other weird stuff
 ;          
 ; 		   each page back and proceed havent do (compare any key with B ; if B then will back to previous page)
 ; 			need to deduct one zero infront for each input start from show price page to payment page
 ; 		   
 
-		;-------------------------------
+		; -------------------------------
 		; this if for retrieve file input 
 		
 		; MOV AX, 0
