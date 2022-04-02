@@ -868,21 +868,40 @@ MAIN PROC
         LEA DX, REG_SUCCESS
         INT 21H   
 
-        ; ; Discount Condition  
-        ; MOV SI, 0
-        ; MOV AX, 0
-        ; MOV AL, ABUFFER[SI]
-        ; CMP AL, "2"
-        ; JGE RCHK_AGE1
-        ; JLE RAGE_DISCOUNT
+        RAGE_COND:
+            ; Set age discount condition
+            ; Load age from file
+            MOV AH,3DH
+            LEA DX, NAFILE
+            MOV AL,0  ; 0 -> reading purpose
+            INT 21H
+            MOV HANDLE,AX
+            MOV AH,3FH  ; read from file
+            MOV BX,HANDLE
+            MOV DX,OFFSET(ABUFFER)   ; store string into buffer
+            MOV CX,2
+            INT 21H
+            ; close file
+            MOV AH, 3EH
+            MOV BX, HANDLE
+            INT 21H
 
-        ; RCHK_AGE1:
-        ;     CMP AL, "6"
-        ;     JGE RAGE_DISCOUNT
-        
-        ; RAGE_DISCOUNT:
-        ;     MOV BL, 0
-        ;     MOV USER_AGE, BL
+            MOV SI, 0
+            MOV AX, 0
+            MOV AL, ABUFFER[SI]
+            CMP AL, "2"
+            JGE RCHK_AGE
+            JL RAGE_DISCOUNT
+
+            RCHK_AGE:
+                CMP AL, "6"
+                JGE RAGE_DISCOUNT
+                JLE CHOOSEROUTE
+            
+            RAGE_DISCOUNT:
+                MOV BL, 0
+                MOV USER_AGE, BL
+                JMP CHOOSEROUTE
         JMP TOPUP
 
     ;------------------------------ MEMBER TOPUP PAGE -----------------------------------;
@@ -948,7 +967,7 @@ MAIN PROC
             ; input text into file
             MOV AH, 40H
             MOV BX, HANDLE
-            MOV CX, 2     
+            MOV CX, 3     
             MOV DX, OFFSET TTL_TOPUP1
             INT 21H
             JMP S_TOPUP
@@ -956,7 +975,7 @@ MAIN PROC
             ; input text into file
             MOV AH, 40H
             MOV BX, HANDLE
-            MOV CX, 2     
+            MOV CX, 3     
             MOV DX, OFFSET TTL_TOPUP2
             INT 21H
             JMP S_TOPUP
@@ -964,7 +983,7 @@ MAIN PROC
             ; input text into file
             MOV AH, 40H
             MOV BX, HANDLE
-            MOV CX, 2     
+            MOV CX, 3     
             MOV DX, OFFSET TTL_TOPUP3
             INT 21H
             JMP S_TOPUP

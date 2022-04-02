@@ -50,11 +50,11 @@
                                 DB 13,10,                       "                                               oo    oo  'oo OOOO-| oo\\_      "
                                 DB 13,10,                       "============================ Welcome to KTM M'sia ============================="
                                 DB 13,10,13,10,                 "                        Please choose your login option !!!                    "
-                                DB 13,10,                       "                            1.    Login as Member                              "
+                                DB 13,10,                       "                            1.    Login as Member (Exclusive Discount)         "                     
                                 DB 13,10,                       "                            2.    Register                                     "
                                 DB 13,10,                       "                            3.    Login as Guest                               "
                                 DB 13,10,                       "                            4.    Quit                                         "
-                                DB 13,10,                       "                (Login as Member to get MEMBER EXCLUSIVE discounts)    $"
+                                DB 13,10,                       "                         Kindly press Enter after input.$                      "
 
     WELCOME_OPT_TXT             DB 13,10,13,10,                 "                               Option: $                                       "
 
@@ -122,13 +122,15 @@
                                 DB 13,10,               "|__/  |__/|________/ \______/ |______/ \______/    |__/  |________/|__/  |__/$"
 
     REGISTER_TXT2               DB 13,10,13,10,13,10,   "================================= Register ====================================="
-                                DB 13,10,13,10,         "                   !!! WARNING: old user will be deleted !!!                   $"
+                                DB 13,10,13,10,         "                   !!! WARNING: old user will be deleted !!!                   "
+								DB 13,10, 				"                      Kindly press Enter after each input.                    $"
 
-    REG_NAME_TXT                DB 13,10,13,10,         "          Please register your username : $"
-    REG_PASS_TXT                DB 13,10,13,10,         "          Please register your password : $"
+    REG_NAME_TXT                DB 13,10,13,10,         "          Please register your username (max 8 characters) : $"
+    REG_PASS_TXT                DB 13,10,13,10,         "          Please register your password (max 8 characters) : $"
     REG_AGE_TXT                 DB 13,10,13,10,         "          Plesae register your age      : $"
     REG_SUCCESS                 DB 13,10,13,10,         "                          Registered Successfully! $"
     CONTINUE_TXT                DB 13,10,               "                       Press Any Key To Continue........$"
+	REGAGE_ERRMSS				DB 13,10,				"                    Invalid input!! Please reinput ur age!!                    $"           
 
     ; store register username
     REG_USERNAME                DB          9
@@ -142,7 +144,7 @@
     ; store register age
     REG_AGE                     DB          3
                                 DB          ?
-                                DB          3 DUP (0)
+    REG_AGEDATA                 DB          3 DUP (0)
     
     ; user age discount condition
     USER_AGE                    DB  1
@@ -336,34 +338,38 @@
 ;------------------------------------------------------------- PAYMENT PAGE ------------------------------------------------------------------;
 	; declare var for cash payment page
     ; Design UI
-	PAY_TXT	    DB  13,10,13,10,        "================================================================================"
-                DB	13,10,13,10,	    "  +------+.          ____   _ __   ____  __ _____ _   _ _____        .+------+"
-                DB  13,10,              "  |`.    | `.       |  _ \ / \\ \ / /  \/  | ____| \ | |_   _|     .' |    .'|"
-                DB  13,10,              "  |  `+--+---+      | |_) / _ \\ V /| |\/| |  _| |  \| | | |      +---+--+'  |"
-                DB  13,10,              "  |   |  |   |      |  __/ ___ \| | | |  | | |___| |\  | | |      |   |  |   |"
-                DB  13,10,              "  +---+--+.  |      |_| /_/   \_\_| |_|  |_|_____|_| \_| |_|      |  .+--+---+"
-                DB  13,10,              "   `. |    `.|                                                    |.'    | .' "
-                DB  13,10,              "     `+------+                                                    +------+'   "
-                DB  13,10,13,10,        "================================= Payment Page ================================="
-				DB 	13,10,13,10,13,10, 	"                          Sub-Total       :    RM $                            "              
-	PAY_TXT2  	DB 	13,10,				"                          Member Discount :    $                               "
-	PAY_TXT3	DB	13,10,				"                          Tax Total       :    $                               "
-	PAY_TXT4	DB 	13,10,				"                          Total Amount    :    RM $                            "
-    ECOIN_BALANCE	DB 	13,10,		    "                          E-Coin Balance  :    $                               "
-	PAY_TXT5	DB 	13,10,13,10,13,10,	"                       Enter your pay amount :     RM $                        "
-	PAY_TXT6	DB 	13,10,13,10,		"                       Cash                  :     RM $                        "
-	PAY_TXT7	DB 	13,10,				"                       Change                :     RM $                        "
-    ERROR_MSS6		DB 	13,10,				"  Invalid input. Kindly enter pay amount greater than or equal  total amount  $"
-    TOPUP_OPTION 	DB 	13,10,				"                                Wish to top up?                                "
-					DB 	13,10,				"                                   [1] Yes                                     "
-					DB 	13,10, 				"                                   [2] No                                     $"
-	TOPUP_OPT_TXT   DB 	13,10,				"                            Enter your option:    $                            "
-    ERRPAY_TXT      DB  13,10,              "                         !!! Please Enter 0 ~ 9 !!!                           $"
-    BAL_ERR_TXT     DB  13,10,              "                        !!! Insufficient Balance !!!                           "
-                    DB  13,10,              "                          Press Enter To Continue.....                        $"
+	PAY_TXT	    	DB  13,10,13,10,        "================================================================================"
+					DB	13,10,13,10,	    "  +------+.          ____   _ __   ____  __ _____ _   _ _____        .+------+"
+					DB  13,10,              "  |`.    | `.       |  _ \ / \\ \ / /  \/  | ____| \ | |_   _|     .' |    .'|"
+					DB  13,10,              "  |  `+--+---+      | |_) / _ \\ V /| |\/| |  _| |  \| | | |      +---+--+'  |"
+					DB  13,10,              "  |   |  |   |      |  __/ ___ \| | | |  | | |___| |\  | | |      |   |  |   |"
+					DB  13,10,              "  +---+--+.  |      |_| /_/   \_\_| |_|  |_|_____|_| \_| |_|      |  .+--+---+"
+					DB  13,10,              "   `. |    `.|                                                    |.'    | .' "
+					DB  13,10,              "     `+------+                                                    +------+'   "
+					DB  13,10,13,10,        "================================= Payment Page ================================="
+					DB 	13,10,13,10,	 	"                          Sub-Total       :    RM $                            "              
+	PAY_TXT2  		DB 	13,10,				"                          Member Discount :    $                               "
+	PAY_TXT3		DB	13,10,				"                          Tax Total       :    $                               "
+	PAY_TXT4		DB 	13,10,				"                          Total Amount    :    RM $                            "
+    ECOIN_BALANCE	DB 	13,10, 				"                          E-Coin Balance  :    $                               "
+	PAY_TXT5		DB 	13,10,13,10,		"                       Enter your pay amount :     RM $                        "
+	PAY_TXT6		DB 	13,10,13,10,		"                       Cash                  :     RM $                        "
+	PAY_TXT7		DB 	13,10,				"                       Change                :     RM $                        "
+    ERROR_MSS6		DB 	13,10,				"      Invalid input. Pay amount MUST greater than or equal to total amount$    "
+    ERROR_MSS7		DB 	13,10,				"                        !!! Please enter 1 or 2 !!!                           $"            
+	TOPUP_OPTION 	DB 	13,10,				"                                Wish to top up?                               "
+					DB 	13,10,				"                                   [1] Yes                                    "
+					DB 	13,10, 				"                                   [2] No                                    $"
+	TOPUP_OPT_TXT   DB 	13,10,				"                            Enter your option:    $                           "
+    ERRPAY_TXT      DB  13,10,              "                         !!! Please Enter 0 ~ 9 !!!                          $"
+	ERRPAY_TXT2     DB  13,10,              "                         !!! Please Enter 1 ~ 9 !!!                          $"
+    ; BAL_ERR_TXT     DB  13,10,              "                        !!! Insufficient Balance !!!                          "
+                    ; DB  13,10,              "                          Press Enter To Continue.....                       $"
+	CONT_TXT2		DB  13,10,              "                                                Press Any Key To Continue....$"
+	
 	COUNT3			DB 	0
 	COUNT4			DB 	0
-	USERTYPE		DB  1 ; later ny change when compile if jw code
+	USERTYPE		DB  0 
 	DIS_FIFTYTXT	DB 	"50%$"
 	DIS_NINTYTXT	DB 	"10%$"
 	MEMBER_DISC		DW 	0
@@ -468,12 +474,6 @@ MAIN PROC
 
     ; starts with logo
     JMP LOGO
-
-    ; Comparing COND to 1, if true, jump start (continue programme), else, jmp condelse (terminate programme)
-    MOV AL, COND                               
-    CMP AL, 1
-    JE START 
-    JNE SHUTDOWN  ; jump not equal
 
     ;--------------------------------- LOGO PAGE ------------------------------;
     LOGO:
@@ -669,12 +669,12 @@ MAIN PROC
             MOV AL, ABUFFER[SI]
             CMP AL, "2"
             JGE LCHK_AGE
-            JLE LAGE_DISCOUNT
+            JL	LAGE_DISCOUNT
 
             LCHK_AGE:
                 CMP AL, "6"
                 JGE LAGE_DISCOUNT
-                JLE CHOOSEROUTE
+                JL CHOOSEROUTE
             
             LAGE_DISCOUNT:
                 MOV BL, 0
@@ -807,6 +807,7 @@ MAIN PROC
             INT 21H
 
         ; Register: Get input age
+	INPUTAGE:	
         MOV AH, 09H
         LEA DX, REG_AGE_TXT
         INT 21H
@@ -814,6 +815,63 @@ MAIN PROC
             MOV AH, 0AH
             MOV DX, OFFSET REG_AGE
             INT 21H
+			
+		; check age in the range of 1 and 9 (inclusive)	
+		CHECKAGE1:
+			CMP REG_AGEDATA[0], "0"
+			JLE AGE_ERRMSS
+			CMP REG_AGEDATA[0], "1"
+			JE  CHECKAGE2
+			CMP REG_AGEDATA[0], "2"
+			JE  CHECKAGE2
+			CMP REG_AGEDATA[0], "3"
+			JE  CHECKAGE2
+			CMP REG_AGEDATA[0], "4"
+			JE  CHECKAGE2
+			CMP REG_AGEDATA[0], "5"
+			JE  CHECKAGE2
+			CMP REG_AGEDATA[0], "6"
+			JE  CHECKAGE2
+			CMP REG_AGEDATA[0], "7"
+			JE  CHECKAGE2
+			CMP REG_AGEDATA[0], "8"
+			JE  CHECKAGE2
+			CMP REG_AGEDATA[0], "9"
+			JE  CHECKAGE2
+			JNE AGE_ERRMSS
+			
+		CHECKAGE2:
+			CMP REG_AGEDATA[1], 13
+			JE 	ARR_TO_STRING
+			CMP REG_AGEDATA[1], "0"
+			JE 	ARR_TO_STRING
+			CMP REG_AGEDATA[1], "1"
+			JE  ARR_TO_STRING
+			CMP REG_AGEDATA[1], "2"
+			JE  ARR_TO_STRING
+			CMP REG_AGEDATA[1], "3"
+			JE  ARR_TO_STRING
+			CMP REG_AGEDATA[1], "4"
+			JE  ARR_TO_STRING
+			CMP REG_AGEDATA[1], "5"
+			JE  ARR_TO_STRING
+			CMP REG_AGEDATA[1], "6"
+			JE  ARR_TO_STRING
+			CMP REG_AGEDATA[1], "7"
+			JE  ARR_TO_STRING
+			CMP REG_AGEDATA[1], "8"
+			JE  ARR_TO_STRING
+			CMP REG_AGEDATA[1], "9"
+			JE  ARR_TO_STRING
+			JNE AGE_ERRMSS
+			
+		AGE_ERRMSS:
+			MOV AH, 09H
+			LEA DX, REGAGE_ERRMSS
+			INT 21H
+			JMP INPUTAGE
+			
+		ARR_TO_STRING:	
             ; convert array to string (for writing to file)
             MOV SI, OFFSET REG_AGE + 2
             MOV CL, [SI]
@@ -860,27 +918,44 @@ MAIN PROC
         MOV BX, HANDLE
         INT 21H
 
-        INT 21H
+
         MOV AH, 09H
         LEA DX, REG_SUCCESS
         INT 21H   
 
-        ; ; Discount Condition  
-        ; MOV SI, 0
-        ; MOV AX, 0
-        ; MOV AL, ABUFFER[SI]
-        ; CMP AL, "2"
-        ; JGE RCHK_AGE1
-        ; JLE RAGE_DISCOUNT
+        ; Set age discount condition
+        ; Load age from file
+        MOV AH,3DH
+        LEA DX, NAFILE
+        MOV AL,0  ; 0 -> reading purpose
+        INT 21H
+        MOV HANDLE,AX
+        MOV AH,3FH  ; read from file
+        MOV BX,HANDLE
+        MOV DX,OFFSET(ABUFFER)   ; store string into buffer
+        MOV CX,2
+        INT 21H
+        ; close file
+        MOV AH, 3EH
+        MOV BX, HANDLE
+        INT 21H
 
-        ; RCHK_AGE1:
-        ;     CMP AL, "6"
-        ;     JGE RAGE_DISCOUNT
+        MOV SI, 0
+        MOV AX, 0
+        MOV AL, ABUFFER[SI]
+        CMP AL, "2"
+        JGE RCHK_AGE
+        JL	RAGE_DISCOUNT
+
+        RCHK_AGE:
+            CMP AL, "6"
+            JGE RAGE_DISCOUNT
+            JL TOPUP
         
-        ; RAGE_DISCOUNT:
-        ;     MOV BL, 0
-        ;     MOV USER_AGE, BL
-        JMP TOPUP
+        RAGE_DISCOUNT:
+            MOV BL, 0
+            MOV USER_AGE, BL
+            JMP TOPUP
 
     ;------------------------------ MEMBER TOPUP PAGE -----------------------------------;
     TOPUP:
@@ -945,7 +1020,7 @@ MAIN PROC
             ; input text into file
             MOV AH, 40H
             MOV BX, HANDLE
-            MOV CX, 2     
+            MOV CX, 3     
             MOV DX, OFFSET TTL_TOPUP1
             INT 21H
             JMP S_TOPUP
@@ -953,7 +1028,7 @@ MAIN PROC
             ; input text into file
             MOV AH, 40H
             MOV BX, HANDLE
-            MOV CX, 2     
+            MOV CX, 3     
             MOV DX, OFFSET TTL_TOPUP2
             INT 21H
             JMP S_TOPUP
@@ -961,7 +1036,7 @@ MAIN PROC
             ; input text into file
             MOV AH, 40H
             MOV BX, HANDLE
-            MOV CX, 2     
+            MOV CX, 3     
             MOV DX, OFFSET TTL_TOPUP3
             INT 21H
             JMP S_TOPUP
@@ -1193,7 +1268,7 @@ MAIN PROC
 		MOV AH, 09H
 		LEA DX, ERROR_MSS2
 		INT 21H
-		JMP D_DESTXT
+		JMP D_DEPTEXT
 	; check if it invalid route based on route option
 	CMPROUTE:
 		CMP ROUTE_OPT, "1"
@@ -1205,15 +1280,15 @@ MAIN PROC
 	CHK_KROUTE:
 		MOV BL, DEPART_V
 		CMP BL, DESTIN_V
-		JG  ERRORM_VM3
-		JNE D_TICTXT
+		JGE  ERRORM_VM3
+		JL D_TICTXT
 	; check johor to kedah route
 	; ensure department > destination
 	CHK_JROUTE:
 		MOV BL, DEPART_V
 		CMP BL, DESTIN_V
-		JL  ERRORM_VM4
-		JNE D_TICTXT
+		JLE  ERRORM_VM4
+		JG D_TICTXT
 	; display error message if invalid
 	ERRORM_VM3:
 		MOV AH, 09H
@@ -1345,6 +1420,8 @@ MAIN PROC
 		MOV BACK_V, AL
         MOV BL, BACK_V
         CMP BL, "b"
+        JE CHOOSEROUTE
+        CMP BL, "B"
         JE CHOOSEROUTE
         JNE DISPLAYPRICE
 
@@ -1541,23 +1618,20 @@ MAIN PROC
 	
 		; display subtotal
 	D_SUBTOTAL:
+		CMP Q2, "0"
+		JE PRINT_R2
 
-        CMP Q2, "0"
-        JE PD2
-        CMP R2, "0"
-        JE PD3
-        PD1:
-            MOV AH, 02H
-            MOV DL, Q2
-            INT 21H
-		PD2:
-            MOV AH, 02H
-            MOV DL, R2
-            INT 21H
-        PD3:
-            MOV AH, 02H
-            MOV DL, R1
-            INT 21H
+		MOV AH, 02H
+		MOV DL, Q2
+		INT 21H
+	PRINT_R2:
+		MOV AH, 02H
+		MOV DL, R2
+		INT 21H
+
+		MOV AH, 02H
+		MOV DL, R1
+		INT 21H
 		
 		CMP COUNT3, 1
 		JE 	D_PAYTXT2	; jmp to display member discount
@@ -1574,6 +1648,8 @@ MAIN PROC
         MOV BACK_V, AL
         MOV BL, BACK_V
         CMP BL, "b"
+        JE CHOOSEROUTE
+        CMP BL, "B"
         JE CHOOSEROUTE
         JNE PAYMENT
     ;-------------------------- DISPLAY PAYMENT PAGE -------------------------------------; 
@@ -1605,6 +1681,9 @@ MAIN PROC
 		; if usertype == guest
 		; display 0 for member discount
 	U_GUEST:
+	    MOV AH, 02H
+		MOV DL, "0"
+		INT 21H
 		CMP COUNT3, 2
 		JE 	D_PAYTXT4
 		JNE D_PAYTXT3
@@ -1651,9 +1730,6 @@ MAIN PROC
 	D_PAYTXT3:
 		MOV AH, 09H
 		LEA DX, PAY_TXT3
-		INT 21H
-        MOV AH, 02H
-		MOV DL, "0"
 		INT 21H
 		
 		INC COUNT3   		; count3 = 2
@@ -1703,8 +1779,6 @@ MAIN PROC
         ; ignore 0
         CMP Q5, "0"
         JE MP2
-        CMP R5, "0"
-        JE MP3
 		; display total amount
         MP1:
 		    MOV AH, 02H
@@ -1747,9 +1821,28 @@ MAIN PROC
         MOV BX, HANDLE
         INT 21H
 
+
+		
+		; CMP TBUFFER[0], 30H
+		; JE 	D_TBUFFER1
+		; JNE D_TBUFFER2
+
+	; D_TBUFFER1:
+		; MOV AH, 02H
+		; MOV DX, TBUFFER[1]
+		; INT 21H
+		
+		; MOV AH, 02H
+		; MOV DX, TBUFFER[2]
+		; INT 21H
+		; JMP D_PAYTXT5
+		
+		
+	; D_TBUFFER2:	
         MOV AH, 09H
         MOV DX, OFFSET TBUFFER
         INT 21H
+		JMP D_PAYTXT5
 		
 		
 	; request user input pay amount
@@ -1772,7 +1865,7 @@ MAIN PROC
 		
         ; check if user input enter
 		CMP U_PAY2, 13
-		JE 	SWITCH_VALUE1
+		JE 	CHKPAYINP1
 
 		; user input pay amount (digit 3)
 		MOV AH, 01H
@@ -1782,11 +1875,88 @@ MAIN PROC
 		
 		; check if user input enter 
 		CMP U_PAY3, 13
+		JE 	CHKPAYINP1	
+	
+    CHKPAYINP1:   
+        MOV BX, 0
+        MOV BX, U_PAY1
+        CMP BX, "0"
+        JL ERRPAY
+		JE ERRPAY2
+        CMP BX, "1"
+        JE CHKPAYINP2
+        CMP BX, "2"
+        JE CHKPAYINP2
+        CMP BX, "3"
+        JE CHKPAYINP2
+        CMP BX, "4"
+        JE CHKPAYINP2
+        CMP BX, "5"
+        JE CHKPAYINP2
+        CMP BX, "6"
+        JE CHKPAYINP2
+        CMP BX, "7"
+        JE CHKPAYINP2
+        CMP BX, "8"
+        JE CHKPAYINP2
+        CMP BX, "9"
+        JE CHKPAYINP2
+        JNE ERRPAY
+    CHKPAYINP2:
+        MOV BX, 0
+        MOV BX, U_PAY2
+        CMP BX, "0"
+        JE CHKPAYINP3
+        CMP BX, "1"
+        JE CHKPAYINP3
+        CMP BX, "2"
+        JE CHKPAYINP3
+        CMP BX, "3"
+        JE CHKPAYINP3
+        CMP BX, "4"
+        JE CHKPAYINP3
+        CMP BX, "5"
+        JE CHKPAYINP3
+        CMP BX, "6"
+        JE CHKPAYINP3
+        CMP BX, "7"
+        JE CHKPAYINP3
+        CMP BX, "8"
+        JE CHKPAYINP3
+        CMP BX, "9"
+        JE CHKPAYINP3
+		CMP BX, 13			; if pay amount digit 2 is enter
+		JE 	SWITCH_VALUE1
+        JNE ERRPAY
+    CHKPAYINP3:   
+        MOV BX, 0
+        MOV BX, U_PAY3
+        CMP BX, "0"
+        JE 	HEX_TO_DEC
+        CMP BX, "1"
+        JE 	HEX_TO_DEC
+        CMP BX, "2"
+        JE 	HEX_TO_DEC
+        CMP BX, "3"
+        JE 	HEX_TO_DEC
+        CMP BX, "4"
+        JE 	HEX_TO_DEC
+        CMP BX, "5"
+        JE 	HEX_TO_DEC
+        CMP BX, "6"
+        JE 	HEX_TO_DEC
+        CMP BX, "7"
+        JE 	HEX_TO_DEC
+        CMP BX, "8"
+        JE 	HEX_TO_DEC
+        CMP BX, "9"
+        JE 	HEX_TO_DEC
+		CMP BX, 13			; if pay amount digit 3 is enter
 		JE 	SWITCH_VALUE2
-		JNE	HEX_TO_DEC
+        JNE ERRPAY
 		
-    ; if pay amount digit  is enter
-    ; pay amount digit2 value move into pay amount digit3
+	; if pay amount digit2 is enter
+    ; pay amount digit1 value move into pay amount digit3
     ; move 0 into pay amount digit1
     ; move 0 into pay amount digit2
 	SWITCH_VALUE1:
@@ -1795,7 +1965,7 @@ MAIN PROC
 		MOV U_PAY3, BX
 		MOV U_PAY1, 30H
 		MOV U_PAY2, 30H
-		JMP CHKPAYINP1	
+		JMP HEX_TO_DEC	
 		
     ; pay amount digit2 value move into pay amount digit3
     ; pay amount digit1 value move into pay amount digit2
@@ -1810,82 +1980,7 @@ MAIN PROC
 		MOV U_PAY2, BX
 		
 		MOV U_PAY1, 30H
-		JMP CHKPAYINP1	
-	
-    CHKPAYINP1:   
-        MOV BX, 0
-        MOV BX, U_PAY1
-        CMP BX, "0"
-        JL CHKPAYINP2
-        CMP BX, "1"
-        JE CHKPAYINP2
-        CMP BX, "2"
-        JE CHKPAYINP2
-        CMP BX, "3"
-        JE CHKPAYINP2
-        CMP BX, "4"
-        JE CHKPAYINP2
-        CMP BX, "5"
-        JE CHKPAYINP2
-        CMP BX, "6"
-        JE CHKPAYINP2
-        CMP BX, "7"
-        JE CHKPAYINP2
-        CMP BX, "8"
-        JE CHKPAYINP2
-        CMP BX, "9"
-        JE CHKPAYINP2
-        JG ERRPAY
-    CHKPAYINP2:
-        MOV BX, 0
-        MOV BX, U_PAY2
-        CMP BX, "0"
-        JL ERRPAY
-        JE CHKPAYINP3
-        CMP BX, "1"
-        JE CHKPAYINP3
-        CMP BX, "2"
-        JE CHKPAYINP3
-        CMP BX, "3"
-        JE CHKPAYINP3
-        CMP BX, "4"
-        JE CHKPAYINP3
-        CMP BX, "5"
-        JE CHKPAYINP3
-        CMP BX, "6"
-        JE CHKPAYINP3
-        CMP BX, "7"
-        JE CHKPAYINP3
-        CMP BX, "8"
-        JE CHKPAYINP3
-        CMP BX, "9"
-        JE CHKPAYINP3
-        JG ERRPAY
-    CHKPAYINP3:   
-        MOV BX, 0
-        MOV BX, U_PAY3
-        CMP BX, "0"
-        JL ERRPAY
-        JE HEX_TO_DEC
-        CMP BX, "1"
-        JE HEX_TO_DEC
-        CMP BX, "2"
-        JE HEX_TO_DEC
-        CMP BX, "3"
-        JE HEX_TO_DEC
-        CMP BX, "4"
-        JE HEX_TO_DEC
-        CMP BX, "5"
-        JE HEX_TO_DEC
-        CMP BX, "6"
-        JE HEX_TO_DEC
-        CMP BX, "7"
-        JE HEX_TO_DEC
-        CMP BX, "8"
-        JE HEX_TO_DEC
-        CMP BX, "9"
-        JE HEX_TO_DEC
-        JG ERRPAY
+		JMP HEX_TO_DEC
 		
 	HEX_TO_DEC:	
 		; convert 3 input digit into a number
@@ -1945,10 +2040,12 @@ MAIN PROC
 		
         
 		; ask user whether want to TOP UP or not
+		
+	ASKTOPUP:	
 		MOV AH, 09H
 		LEA DX, TOPUP_OPTION
 		INT 21H
-		
+	INPUT_OPT:
 		MOV AH, 09H
 		LEA DX, TOPUP_OPT_TXT
 		INT 21H
@@ -1961,9 +2058,16 @@ MAIN PROC
 		MOV BX, 0
 		MOV BL, TOPUP_VALUE
 		CMP BL, "1"
-		JE 	SECTOPUP                  ; jmp to topup 2 then jump back to payment page
+		JE 	SECTOPUP				; jmp to topup 2 then jump back to payment page
 		CMP BL, "2"
 		JE 	D_PAYTXT5
+		JNE D_ERRORMESS3   			; display error message if not 1 or 2
+		
+	D_ERRORMESS3:
+		MOV AH, 09H
+		LEA DX, ERROR_MSS7
+		INT 21H
+		JMP INPUT_OPT
 		
 	; transfer MEMBER_DISC value to TTL_AMT
 	CONVERT:	
@@ -2052,12 +2156,14 @@ MAIN PROC
         
 		JMP CAL_CHANGE
 		
-	; charge = user input pay amount - total amount
+	; change = user input pay amount - total amount
 	CAL_CHANGE:	 
 		MOV AX, 0
 		MOV AX, U_TPAY
 		SUB AX, TTL_AMT
 		MOV CHANGE, AX
+        CMP USERTYPE, 0
+        JE D_CHANGE
 		
         ; add change into balance
         MOV AX, 0
@@ -2106,8 +2212,8 @@ MAIN PROC
         MOV BX, HANDLE
         INT 21H
         
-
-		; prepare to display charge
+    D_CHANGE:
+		; prepare to display change
 		MOV AX, 0
 		MOV AX, CHANGE
 		DIV TEN
@@ -2135,10 +2241,13 @@ MAIN PROC
 		ADD U_PAY3, 30H
 		
 		; display pay amount/cash input by user
+		CMP U_PAY1, 30H		; check if first digit is 0
+		JE 	PRINT_UPAY2
+		
 		MOV AH, 02H
 		MOV DX, U_PAY1
 		INT 21H
-		
+	PRINT_UPAY2:	
 		MOV AH, 02H
 		MOV DX, U_PAY2
 		INT 21H
@@ -2153,16 +2262,27 @@ MAIN PROC
 		INT 21H
 		
 		; print out the change
+		CMP Q7, 30H		; check if first digit is 0
+		JE 	PRINT_R7
+		
 		MOV AH, 02H
 		MOV DL, Q7
 		INT 21H
-		
+	PRINT_R7:	
 		MOV AH, 02H
 		MOV DL, R7
 		INT 21H
 		
 		MOV AH, 02H
 		MOV DL, R6
+		INT 21H
+		
+		; press any key to continue
+		MOV AH, 09H
+		LEA DX, CONT_TXT2
+		INT 21H
+		
+		MOV AH, 07H
 		INT 21H
         JMP TICKET
     
@@ -2171,25 +2291,21 @@ MAIN PROC
         LEA DX, ERRPAY_TXT
         INT 21H
         JMP D_PAYTXT5
+		
+	ERRPAY2:
+		MOV AH, 09H
+		LEA DX, ERRPAY_TXT2
+		INT 21H
+		JMP D_PAYTXT5
 
     ERRPAYBAL:
         MOV AH, 09H
-        LEA DX, BAL_ERR_TXT
+        LEA DX, ERROR_MSS6
         INT 21H
-        PUSH CX
-        PUSH AX
-        PUSH DX
-        PUSH BX
-        MOV AH, 08H
-        INT 21H
-        POP BX
-        POP AX
-        POP DX
-        POP CX
-        JMP D_PAYTXT5
-    
+        JMP ASKTOPUP
+		
     ;----------------------------------------- DISPLAY SECOND TOP UP PAGE ------------------------------;
-    SECTOPUP:
+	SECTOPUP:
         ; Load current balance into account
         MOV AH,3DH
         LEA DX, NTFILE
@@ -2210,23 +2326,25 @@ MAIN PROC
         ; process data from file into whole unmber
         MOV AX, 0
         MOV AX, TBUFFER2[0]              
-        SUB AX, 30H
+        SUB AX, 30H    
+        MOV AH, 0
         MUL HUNDRED     
         MOV T2HUNDREDV, AX  ; hundreds
         MOV AX, 0
         MOV AX, TBUFFER2[1]    
-        SUB AX, 30H
-        MUL TEN
-        MOV AX, 0
+        SUB AX, 30H 
+        MOV AH, 0
+        MUL TEN     
+        MOV T2TENV, AX
         MOV AX, TBUFFER[2]
-        SUB AX, 30H
+        SUB AX, 30H   
+        MOV AH, 0     
         MOV T2ONEV, AX
-        MOV T2TENV, AX        ; tens
         
         MOV BX, 0
         MOV BX, T2HUNDREDV    ; combine everything into bx
         ADD BX, T2TENV
-        MOV BH, 0         
+        ADD BX, T2ONEV     
         MOV TTLTEMP, BX
 
         ; cls whole screen
@@ -2357,7 +2475,6 @@ MAIN PROC
             
     ; Validate Result  (Max: 999)
     T2CHECK:
-        MOV BX, 0    
         MOV BX, T2TTLV
         CMP BX, 1000
         JL TUPDATE
@@ -2505,6 +2622,7 @@ MAIN PROC
         MOV COUNT2, 0
         MOV COUNT3, 0
         MOV JUMP_COND, 0
+        MOV USERTYPE, 0
         ; cls whole screen
         MOV AH, 00H                                 
         MOV AL, 02H 
@@ -2513,14 +2631,27 @@ MAIN PROC
         MOV AH, 09H
         LEA DX, CONTINUE_TXT1
         INT 21H
-        MOV AH, 01H
+    CONT_INPUT:	
+        MOV AH, 07H
         INT 21H
         MOV CONT_OPT, AL
+		; convert y/n to Y/N
+		MOV AL, CONT_OPT
+		CMP AL, "y"
+		JE	CONVERTTOUPPER
+		CMP AL, "n"
+		JE	CONVERTTOUPPER
+		JNE CMP_VALUE
+	CONVERTTOUPPER:
+		SUB AL, 20H
+		MOV CONT_OPT, AL
+	
+	CMP_VALUE:
         MOV AX, 0
         MOV AL, CONT_OPT
-        CMP AL, "y"
+        CMP AL, "Y"
         JE LOGO
-        CMP AL, "n"
+        CMP AL, "N"
         JE SHUTDOWN
         JNE ERR_CONT
     
@@ -2528,18 +2659,7 @@ MAIN PROC
         MOV AH, 09H
         LEA DX, ERR_CONT_TXT
         INT 21H
-        ;PRESS ANY KEY TO CONTINUE
-        PUSH CX
-        PUSH AX
-        PUSH DX
-        PUSH BX
-        MOV AH, 08H
-        INT 21H
-        POP BX
-        POP AX
-        POP DX
-        POP CX
-        JMP CONTINUE_PAGE
+        JMP CONT_INPUT
 
 
 
